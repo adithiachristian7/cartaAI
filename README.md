@@ -1,1 +1,1 @@
-"# cartaAI" 
+"# cartaAI - AI Invitation Generator Website" 
