@@ -1,0 +1,225 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+/* --- THEME VARIABLES --- */
+:root {
+  --bg-gradient-start: #f0f4f8;
+  --bg-gradient-end: #d9e2ec;
+  --text-primary: #333;
+  --header-text: #2c3e50;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(255, 255, 255, 0.2);
+  --card-shadow: rgba(31, 38, 135, 0.15);
+  --profile-pic-bg: #e0e0e0;
+  --profile-pic-border: #fff;
+  --profile-pic-text: #3498db;
+  --nim-text: #555;
+}
+
+body.dark-mode {
+  --bg-gradient-start: #2c3e50;
+  --bg-gradient-end: #1a2833;
+  --text-primary: #f0f4f8;
+  --header-text: #ffffff;
+  --card-bg: rgba(44, 62, 80, 0.7);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --profile-pic-bg: #4a6b8c;
+  --profile-pic-border: #2c3e50;
+  --profile-pic-text: #a9d6f5;
+  --nim-text: #bdc3c7;
+}
+
+/* --- GENERAL STYLES --- */
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(
+    45deg,
+    var(--bg-gradient-start),
+    var(--bg-gradient-end),
+    var(--bg-gradient-start)
+  );
+  background-size: 400% 400%;
+  color: var(--text-primary);
+  margin: 0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  animation: gradientAnimation 15s ease infinite;
+  transition: background 0.5s ease;
+}
+
+h1 {
+  color: var(--header-text);
+  margin-bottom: 3rem;
+  font-size: 2.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.team-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1200px;
+  perspective: 1000px;
+}
+
+.member-card {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 8px 32px 0 var(--card-shadow);
+  padding: 2rem;
+  width: 280px;
+  text-align: center;
+  transition: transform 0.1s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-content {
+  transition: filter 0.4s ease-in-out;
+}
+
+.role-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  pointer-events: none;
+}
+
+.role-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transform: scale(0.9);
+  transition: transform 0.4s ease-in-out;
+}
+
+.member-card.info-visible .card-content {
+  filter: blur(5px) brightness(0.8);
+}
+
+.member-card.info-visible .role-info {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.member-card.info-visible .role-info h3 {
+  transform: scale(1);
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--profile-pic-bg);
+  margin: 0 auto 1.5rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--profile-pic-text);
+  border: 3px solid var(--profile-pic-border);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.member-card h2 {
+  font-size: 1.25rem;
+  color: var(--header-text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  transform: translateZ(40px);
+}
+
+.member-card p {
+  font-size: 1rem;
+  color: var(--nim-text);
+  margin: 0;
+  transform: translateZ(20px);
+}
+
+/* --- ANIMATIONS --- */
+.member-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.member-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.member-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.member-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.member-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* --- THEME ICON --- */
+#theme-icon-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#theme-icon-container svg {
+  width: 30px;
+  height: 30px;
+  stroke: var(--header-text);
+  transition: stroke 0.3s ease, transform 0.3s ease;
+}
+
+#theme-icon-container:hover svg {
+  stroke: var(--profile-pic-text);
+  transform: scale(1.1) rotate(15deg);
+}
+
+#theme-icon-moon {
+  display: none; /* Hidden by default */
+}
+
+body.dark-mode #theme-icon-sun {
+  display: none;
+}
+
+body.dark-mode #theme-icon-moon {
+  display: block;
+}

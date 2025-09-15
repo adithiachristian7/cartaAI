@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembayaran Blockchain - CartaAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Pembayaran Blockchain</h2>
+    <button onclick="connectWallet()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mb-4 transition duration-200 flex items-center justify-center">
+      <span class="mr-2">🔗</span> Connect Wallet
+    </button>
+    <button id="pay" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg mb-6 transition duration-200">
+      Bayar 0.001 ETH
+    </button>
+    <div id="log" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono text-gray-700 overflow-auto max-h-40"></div>
+  </div>
+
+  <!-- Ethers.js v6 -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <script>
+    const CONTRACT_ADDRESS = "0x651675f8899019b81901c592191d075bbbfeeaa9"; // kontrak di Sepolia
+    const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111 dalam hex
+
+    const ABI = [
+      {
+        "inputs": [
+          { "internalType": "address", "name": "_cartaAI", "type": "address" },
+          { "internalType": "address", "name": "_taxWallet", "type": "address" }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": false, "internalType": "address", "name": "from", "type": "address" },
+          { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "indexed": false, "internalType": "string", "name": "memo", "type": "string" }
+        ],
+        "name": "Paid",
+        "type": "event"
+      },
+      {
+        "inputs": [{ "internalType": "string", "name": "memo", "type": "string" }],
+        "name": "pay",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "cartaAI",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "taxWallet",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+
+    const memo = "Bayar Paket Premium Undangan CartaAI";
+    const $ = id => document.getElementById(id);
+    const log = m => $("log").innerHTML += m + "<br>";
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("⚠️ MetaMask belum terinstall!");
+        return;
+      }
+
+      try {
+        // Pastikan user ada di Sepolia
+        const chainId = await ethereum.request({ method: "eth_chainId" });
+        if (chainId !== SEPOLIA_CHAIN_ID) {
+          log("⚠️ Kamu tidak di Sepolia. Meminta switch...");
+          await ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: SEPOLIA_CHAIN_ID }],
+          });
+        }
+
+        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+        log("🔗 Wallet terhubung: " + accounts[0]);
+      } catch (err) {
+        log("❌ Error connect: " + err.message);
+      }
+    }
+
+    document.getElementById("pay").onclick = async () => {
+      if (!window.ethereum) {
+        alert("⚠️ MetaMask belum terinstall!");
+        return;
+      }
+
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const account = await signer.getAddress();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+        const bal = await provider.getBalance(account);
+        log("💰 Saldo ETH: " + ethers.formatEther(bal));
+
+        const tx = await contract.pay(memo, {
+          value: ethers.parseEther("0.001")
+        });
+
+        log("⏳ Transaksi dikirim: " + tx.hash);
+        log("🔗 Lihat di Etherscan: https://sepolia.etherscan.io/tx/" + tx.hash);
+
+        const rcpt = await tx.wait();
+        log("✅ Transaksi confirmed di block " + rcpt.blockNumber);
+        alert("Pembayaran berhasil! Fitur premium telah diaktifkan.");
+
+      } catch (e) {
+        log("❌ Error: " + (e.message || e));
+      }
+    };
+  </script>
+</body>
+</html>
