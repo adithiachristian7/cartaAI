@@ -77,61 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
     paymentModal.classList.add('hidden');
   });
 
-  // Redirect to pay.html when MetaMask is selected
-  const paymentMethodSelect = document.getElementById('payment-method');
-  paymentMethodSelect.addEventListener('change', function() {
-    if (this.value === 'ewallet') {
-      window.location.href = 'pay.html';
-    }
-  });
-
-  // MetaMask integration functions
-  async function isMetaMaskInstalled() {
-    return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
-  }
-
-  async function connectMetaMask() {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      return accounts[0];
-    } catch (error) {
-      throw new Error('Koneksi MetaMask dibatalkan atau gagal.');
-    }
-  }
-
-  async function sendMetaMaskPayment() {
-    if (!await isMetaMaskInstalled()) {
-      alert('MetaMask tidak terdeteksi. Silakan instal MetaMask terlebih dahulu.');
-      return false;
-    }
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const from = accounts[0];
-      const transactionParameters = {
-        to: '0xYourMetaMaskWalletAddressHere', // Ganti dengan alamat tujuan pembayaran
-        from: from,
-        value: '0x' + (50000 * 1000000000000000).toString(16), // Contoh nilai 0.05 ETH dalam wei (ubah sesuai kebutuhan)
-      };
-      await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [transactionParameters],
-      });
-      return true;
-    } catch (error) {
-      alert('Pembayaran MetaMask gagal: ' + error.message);
-      return false;
-    }
-  }
-
-  payBtn.addEventListener('click', async function() {
+  payBtn.addEventListener('click', function() {
     const method = document.getElementById('payment-method').value;
-    if (method === 'ewallet') {
-      // Redirect to pay.html for MetaMask payment
-      window.location.href = 'pay.html';
-    } else {
-      alert(`Pembayaran berhasil dengan metode ${method}! Fitur premium telah diaktifkan.`);
-      paymentModal.classList.add('hidden');
-    }
+    alert(`Pembayaran berhasil dengan metode ${method}! Fitur premium telah diaktifkan.`);
+    paymentModal.classList.add('hidden');
   });
 
   // Close modals on outside click

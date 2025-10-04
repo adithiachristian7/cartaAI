@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="description" content="CartaAI - Undangan Digital Cerdas" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>CartaAI - Undangan Digital Cerdas</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style type="text/tailwindcss">
+      :root {
+        --c-primary: #3b82f6;
+        --c-secondary: #f0f2f4;
+        --c-text-primary: #1e293b;
+        --c-text-secondary: #64748b;
+        --c-white: #ffffff;
+        --c-accent: #f9a8d4;
+      }
+      body {
+        font-family: 'Manrope', 'Noto Sans', sans-serif;
+      }
+      .bg-soft-blue {
+        background-color: var(--c-primary);
+      }
+      .text-soft-blue {
+        color: var(--c-primary);
+      }
+      .border-soft-blue {
+        border-color: var(--c-primary);
+      }
+      .bg-clean-white {
+        background-color: var(--c-white);
+      }
+      .bg-light-gray {
+        background-color: var(--c-secondary);
+      }
+      .text-primary {
+        color: var(--c-text-primary);
+      }
+      .text-secondary {
+        color: var(--c-text-secondary);
+      }
+      .btn-primary {
+        @apply bg-soft-blue text-white hover:bg-blue-600 transition-colors duration-300;
+      }
+      .btn-secondary {
+        @apply bg-light-gray text-primary hover:bg-slate-200 transition-colors duration-300;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

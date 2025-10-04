@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CartaAI - Template Marketplace</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-slate-900 dark:text-white">
+<svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+<h1 class="text-xl font-bold">CartaAI</h1>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Beranda</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Buat Undangan</a>
+<a class="text-sm font-bold text-primary" href="#">Template Premium</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Acara Saya</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400">search</span>
+<input class="w-full max-w-xs pl-10 pr-4 py-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Cari template..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">notifications</span>
+</button>
+<img alt="User avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsr7lS1aGLnhFoBPa4Qw7jv-wKY3PfcaWclsqBe9rM_f1P4WnpG3ROzomXWKcav2rnhxM7oNxn1jxUnHy6ecAXsC9eytNlN7_uQJOMYAPypRnO2z0T17wbVTtmdX9WfQH3iEZySfcO8vj__rh5GVLwl56SOXQlcSvEgN9u67n-NIoP9nZEcH3VD9cQyHvtUemSvYaoejGC0JXCxc892KxSOQ78l1CzDObTNxYvJjiqtFDwdl-yuH11LYB4YPHl3GI2nh9qzv4ZOg"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="flex flex-col gap-8">
+<div class="text-center">
+<h2 class="text-4xl font-bold text-slate-900 dark:text-white">Marketplace Template Undangan</h2>
+<p class="mt-2 text-lg text-slate-600 dark:text-slate-400">Temukan desain sempurna untuk setiap momen spesial Anda.</p>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+<span class="text-sm font-medium">Jenis Acara</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+<span class="text-sm font-medium">Gaya</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+<span class="text-sm font-medium">Popularitas</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+<span class="text-sm font-medium">Harga</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDocUeWuFlnitSL7VCTw8dxBGMuAaVWvL2W-hGJz7bYtyb0d8ca1GInZfoAINZJOqQc1XeIkg8Tgpn5jgy255fx7dPHNsiI2HKZ3_jLLPYXL4u9647yIByiKtnb7lnyr7tzJ7-jaKja7s3fqReTHSo3ShoxD_xxQDYHuMafl740vwGYKLOoxoFbHqYLfY2Hivda_EWLDQUAiyXR4FzXTDz0pKUBzyalRqSj-JAcKt9TFvrEDjyQyWS8eEm2w4n2L8gNOj689WxlQA");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Pernikahan Romantis</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 150.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBjGSiab_b6wFurXtGT2Dwb1Tl0-WfBuFoUisN-jBrqMKdGAqXurdrRhbwPIyErs7H7djZqtN-bXy6C9_n6fpcKncQ9HwSGIsIBJF1HvWxRnkHCuw7pAadRZ_7nM0M1oVcZ9BEMIPZAJdf8UusqqkIgM9_kBrOjFkSEO48U3yKDigNBK4CW8wDeuFyCjtLTeg5CK1JldIVPpNkmwxMHp38voxmrrOBBPIe1LNwVC7_HnszPHZNdOx5uJ46k4Y_duZvPOkk4_pOHEg");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Ulang Tahun Anak</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 75.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBhLxXaX3PSB-sDVgEo9Mfm_j1MSm_gYvehmQPMJES6x01vh8_R3ydDPbdddro2YbI-mNg-NEhmDF6j47IolVy5MeI3_Jm__cabHDdpt72kbpC05zALlpvMZs84hGBhpBz7WBPm_svQEQUV_3HD8KElZ9aS6r1VmRAirCD-50DRmVQ29sHVjqG_03IyVP5em02iMDv4hPh5-8pyZqRmtdHKe2IvOpeOfNkZfH0_36YxYwpWPavc0HHIHYUggsixsYlVPPn7lgrhrg");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Kelahiran Bayi</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 80.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjMns2cspjHf3ARjwUXdJhgbuePtoRmSHaHPzknkgJStmrDaS1RNqyG22zAWHVSwQTPqv65jwx199oLy1mdKlTm2BVJbnOnl_VfWeVkKekbSgldBfbxNU3R1p6Dm7ktAEKXeQzivn2dHYl0ztFvGvL66JezAFSQ3O-fSdbvKFJQKfcuwb83rwQWYq8QMh6Ev_cI-X4pRs8HHRN-6TrD7uCYa7RCCeuo3yS9xpn50gKuNT2UvQaY4h5Q1GFe4EhRyZm5Q21trmDFw");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Pesta Kelulusan</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 100.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOtvR5OWtNdR6I05_sOdqbGhkftHAOS6J9LDLcIOGSf1w8vDFV57VaC2C0KrGWBtg_WzxdaewpyJxcFpBcWwYXgtvk-AXkRV-PrMqKmS5qcLdtjzTydYEHBWps2QkMiTJ-eHc63D4lRmh19G68T0VVrwWDfRyGK3fyg9BhoJYtWOKFteVaw8mnbJmqcT7QHgUKH_xD8ST8Exla3tEu3gS-JVLAYcOw1OeQHmwTTXVglCWhkpu6fazYsoZ7u5DT3hcr0UxGe39jvw");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Pertunangan Elegan</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 175.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCobIAdUhMZY4ZCtwyFEAN0ekhCQdrC8sOLtn6VAY5tjg0YnpOsyBtlTsjcFZ0YyquqiUWsAb1N7070i5ShY_ND3FvyTBpMAoHDN95YXNfeSFwpAXxcKXTR_HwnfOXLlPSJMgM_QLMyz5-qliTgVkiHbPuA9NHUpVzYa8SOLakUdWztGvuXEkqC7cebu_xb_uS788xgm9GnQKN-5XXR8ML5vfireN1ozynID5mIox8vk7pB_G7npkdOQhGNtlScUX-QpmTriblz-w");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Syukuran Rumah Baru</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 90.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQw2Q63cdo1EoWrTPQI7oHHJGPxNiBLMQmAIgYq0AKenjkN6WBdhnWwpnNFzVHuzD6o2pXUVzHQxo9n0LkYxLaL71FuXmpSOY7_aTdj9NeRh2MUbhK9ufd9h1nZTqsMjMsUR2gmcjIxkaXuGasMLihysIi6BE2S4JChSjLUGC5bySGSgmw1JaKOMvNUJxn8HMDHfiTWWmBo5aFt3CUN6F97vHfZQAjDtmof4pllTynEJxxVvfqm-lsmsYtH5y1rrL5pDvlCimKbQ");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Pesta Kebun</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 110.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBM7KBVdnGU2iZp7qZr8hvHnWirl52faIWA4vtbCWwmxx0_1Zq_vNQz_K5y2n7oHffAKgX11I9JrMWKzoeZikqhVG7Gja_j4neHcDhUePXWno2u1I5qEOsl35WBP-u_3i2D0jACayccDKkfEc0M48X-pPu2rfRiUtlD8ZpmmJAXhI3vEVzHEfNo-9DoTHqcHa-kkLYBXVDDzqziIp6NPVDbSd8i-2Ns56MwnPMHrGksxA472IKD1g7IquuS0LDe8VM_JqrwX7ocFw");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Arisan Bulanan</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 50.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAv5llrxXBIMhigeKdOJD06KCetH3fxuCgN8noWs_ei0p-B0NmJeUByMxzGt4lRQZeii58fe29BPksmTXbimWkv5ppQxzstvVBQVXfBF1seZtb8LwVYNZlMiNgl8moZeYKnH4zVcDNmVzqMZtUdRNNtDVOAbUMVoJt26VOuh2awt2SMRGswZmtVtxkC1gsxJO77XfHJQZRX0AnaZsT3CPwsfYR4ub3tpa4XTU1JqtJdkzRaZxMBYiGgYe57wjJ8y9f6tpzTsJSvag");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Seminar Bisnis</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 120.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+<div class="group relative flex flex-col rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800/50">
+<div class="aspect-[3/4] bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZ73hbZoVHq-EfsXONvTUcO9DoyMk0kGjTAmLRmaTUFefct7FcdhbTOKwn9k_IkbqTSfC-2YMqv6D4V6DrJs_WfUgWrn8JdDqZlj3tSuMLEWJ68YSaHHV3MWdYifDk0B0pQhrMWL6vPZ34ZbYl3SCMtDikPgPzBw9oD0gyXgDQU38v6Zk0RsbKT_SAJFF0W-2YNpYqQkDQx0oyZCwQzFKRO-xxeWXeawmOHXadKIN48aBe38drIEjyHxx8p8TTaUXITH2Waa-NMg");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<h3 class="text-white font-semibold">Undangan Reuni Sekolah</h3>
+<p class="text-sm text-slate-300 mt-1">Rp 95.000</p>
+<button class="mt-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-full hover:bg-primary/80 transition-colors w-full">Gunakan</button>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-center gap-2 mt-8">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white font-bold text-sm">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">3</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">4</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">5</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

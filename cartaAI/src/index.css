@@ -1,0 +1,84 @@
+body {
+  margin: 0;
+  font-family: 'Manrope', 'Noto Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Button Hover Effects */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid #4d5786;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+  text-shadow: 2px 2px 4px rgba(77, 87, 134, 0.8), 0 0 10px rgba(77, 87, 134, 0.6);
+}
+
+.btn-secondary:hover {
+  background: #4d5786;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+/* Navbar Button Hover Effects */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* Link Hover Effects */
+a {
+  transition: all 0.3s ease;
+}
+
+/* Pricing Card Hover Effects */
+.pricing-card {
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Feature Icon Hover Effects */
+.feature-icon {
+  transition: all 0.3s ease;
+}
+
+.feature-icon:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.feature-icon:hover span {
+  color: white;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
