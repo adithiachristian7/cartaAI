@@ -1,8 +1,11 @@
 import React from "react";
 import { Link } from 'react-router-dom';
 import TypingAnimation from './TypingAnimation';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 function Hero() {
+  const { session } = useAuth(); // Get session from context
+
   return (
     <section className="relative text-center">
       <div className="absolute inset-0 z-0">
@@ -31,7 +34,8 @@ function Hero() {
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link
-            to="/chat"
+            // Conditionally set the destination URL
+            to={session ? "/chat" : "/register"}
             className="btn-primary rounded-full px-8 py-3 text-base font-bold shadow-lg"
           >
             Coba Gratis Sekarang
