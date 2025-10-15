@@ -4,3 +4,5 @@ supabase
 python-dotenv
 requests
 midtransclient
+google-generativeai
+python-multipart

@@ -8,6 +8,8 @@ function PremiumGenerator() {
     tanggalAcara: "",
     waktuAcara: "",
     lokasiAcara: "",
+    waktuResepsi: "",
+    tempatResepsi: "",
     fotoMempelaiPria: null,
     fotoMempelaiWanita: null,
     galeriFoto: [],
@@ -73,6 +75,8 @@ function PremiumGenerator() {
 📅 Tanggal: ${formData.tanggalAcara}
 ⏰ Waktu: ${formData.waktuAcara || 'Belum ditentukan'}
 📍 Lokasi: ${formData.lokasiAcara}
+⏰ Waktu Resepsi: ${formData.waktuResepsi || 'Belum ditentukan'}
+📍 Tempat Resepsi: ${formData.tempatResepsi || 'Belum ditentukan'}
 🎨 Tema: ${formData.temaWarna || 'Default'}
 📝 Catatan: ${formData.catatanKhusus || 'Tidak ada'}
 
@@ -183,7 +187,7 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
             <div className="bg-white rounded-lg shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-soft-blue to-blue-600 px-6 py-4">
                 <h2 className="text-2xl font-bold text-white">Detail Acara Pernikahan</h2>
-                <p className="text-blue-100">Lengkapi informasi di bawah ini untuk membuat undangan premium</p>
+                <p className="text-blue-950">Lengkapi informasi di bawah ini untuk membuat undangan premium</p>
               </div>
 
               <form onSubmit={handleGenerate} className="p-8">
@@ -261,6 +265,33 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent"
                         placeholder="Masukkan alamat lengkap lokasi acara"
                         required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Waktu Resepsi
+                      </label>
+                      <input
+                        type="time"
+                        name="waktuResepsi"
+                        value={formData.waktuResepsi}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Tempat Resepsi
+                      </label>
+                      <textarea
+                        name="tempatResepsi"
+                        value={formData.tempatResepsi}
+                        onChange={handleInputChange}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent"
+                        placeholder="Masukkan alamat lengkap lokasi resepsi"
                       />
                     </div>
                   </div>
@@ -372,7 +403,7 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
                 <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-soft-blue to-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                    className="bg-gradient-to-r from-soft-blue to-blue-600 text-slate-800 px-8 py-4 rounded-lg font-bold text-lg shadow-lg hover:from-blue-600 hover:to-blue-700 hover:text-white transition-all duration-300 transform hover:scale-105"
                   >
                     <span className="material-symbols-outlined mr-2">auto_awesome</span>
                     Generate Undangan Premium
