@@ -18,6 +18,12 @@ function PremiumGenerator() {
     catatanKhusus: ""
   });
 
+  const [previews, setPreviews] = useState({
+    fotoMempelaiPria: null,
+    fotoMempelaiWanita: null,
+    galeriFoto: []
+  });
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -41,15 +47,48 @@ function PremiumGenerator() {
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     if (name === 'galeriFoto') {
+      const newFiles = Array.from(files);
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
       setFormData(prev => ({
         ...prev,
-        [name]: Array.from(files)
+        [name]: [...prev.galeriFoto, ...newFiles]
+      }));
+      setPreviews(prev => ({
+        ...prev,
+        [name]: [...prev.galeriFoto, ...newPreviews]
       }));
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: files[0]
-      }));
+      const file = files[0];
+      if (file) {
+        setFormData(prev => ({
+          ...prev,
+          [name]: file
+        }));
+        setPreviews(prev => ({
+          ...prev,
+          [name]: URL.createObjectURL(file)
+        }));
+      }
+    }
+  };
+
+  const handleFileDelete = (name, index = null) => {
+    if (index !== null) {
+      // Handle gallery photo deletion
+      const newFiles = [...formData.galeriFoto];
+      const newPreviews = [...previews.galeriFoto];
+      
+      URL.revokeObjectURL(newPreviews[index]); // Clean up object URL
+      newFiles.splice(index, 1);
+      newPreviews.splice(index, 1);
+
+      setFormData(prev => ({ ...prev, galeriFoto: newFiles }));
+      setPreviews(prev => ({ ...prev, galeriFoto: newPreviews }));
+    } else {
+      // Handle single photo deletion
+      URL.revokeObjectURL(previews[name]); // Clean up object URL
+      setFormData(prev => ({ ...prev, [name]: null }));
+      setPreviews(prev => ({ ...prev, [name]: null }));
     }
   };
 
@@ -186,7 +225,7 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
             /* Generator Form */
             <div className="bg-white rounded-lg shadow-xl overflow-hidden">
               <div className="bg-gradient-to-r from-soft-blue to-blue-600 px-6 py-4">
-                <h2 className="text-2xl font-bold text-white">Detail Acara Pernikahan</h2>
+                <h2 className="text-2xl font-bold text-blue-950">Detail Acara Pernikahan</h2>
                 <p className="text-blue-950">Lengkapi informasi di bawah ini untuk membuat undangan premium</p>
               </div>
 
@@ -343,26 +382,46 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Foto Mempelai Wanita
                       </label>
-                      <input
-                        type="file"
-                        name="fotoMempelaiWanita"
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600"
-                      />
+                      {!previews.fotoMempelaiWanita ? (
+                        <input
+                          type="file"
+                          name="fotoMempelaiWanita"
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600"
+                        />
+                      ) : (
+                        <div className="mt-2 p-2 border rounded-lg">
+                          <img src={previews.fotoMempelaiWanita} alt="Preview" className="w-24 h-24 object-cover rounded-md" />
+                          <div className="mt-2 flex gap-2">
+                            <a href={previews.fotoMempelaiWanita} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">Lihat</a>
+                            <button type="button" onClick={() => handleFileDelete('fotoMempelaiWanita')} className="text-sm text-red-600 hover:underline">Hapus</button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Foto Mempelai Pria
                       </label>
-                      <input
-                        type="file"
-                        name="fotoMempelaiPria"
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600"
-                      />
+                      {!previews.fotoMempelaiPria ? (
+                        <input
+                          type="file"
+                          name="fotoMempelaiPria"
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600"
+                        />
+                      ) : (
+                        <div className="mt-2 p-2 border rounded-lg">
+                          <img src={previews.fotoMempelaiPria} alt="Preview" className="w-24 h-24 object-cover rounded-md" />
+                          <div className="mt-2 flex gap-2">
+                            <a href={previews.fotoMempelaiPria} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">Lihat</a>
+                            <button type="button" onClick={() => handleFileDelete('fotoMempelaiPria')} className="text-sm text-red-600 hover:underline">Hapus</button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -377,10 +436,22 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
                         multiple
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-soft-blue focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600"
                       />
-                      {formData.galeriFoto.length > 0 && (
-                        <p className="text-sm text-gray-600 mt-2">
-                          {formData.galeriFoto.length} foto dipilih
-                        </p>
+                      {previews.galeriFoto.length > 0 && (
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                          {previews.galeriFoto.map((preview, index) => (
+                            <div key={index} className="relative p-1 border rounded-lg">
+                              <img src={preview} alt={`Preview ${index}`} className="w-full h-20 object-cover rounded-md" />
+                              <div className="absolute top-1 right-1 flex gap-1">
+                                <a href={preview} target="_blank" rel="noopener noreferrer" className="bg-white bg-opacity-75 rounded-full p-1">
+                                  <span className="material-symbols-outlined text-sm">visibility</span>
+                                </a>
+                                <button type="button" onClick={() => handleFileDelete('galeriFoto', index)} className="bg-white bg-opacity-75 rounded-full p-1">
+                                  <span className="material-symbols-outlined text-sm text-red-600">delete</span>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
 
@@ -448,7 +519,7 @@ Apakah Anda ingin saya lanjutkan dengan pembuatan undangan sekarang, atau ada de
                       className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${ 
                           message.type === "user"
                             ? "bg-gradient-to-r from-soft-blue to-blue-600 text-white"
                             : "bg-gray-100 text-gray-800"
