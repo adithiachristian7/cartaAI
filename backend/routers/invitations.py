@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from typing import Optional, List
 import os
@@ -109,4 +110,26 @@ async def generate_and_upload_invitation(request: InvitationRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate invitation: {str(e)}"
+        )
+
+
+@router.get("/{slug}", response_class=HTMLResponse)
+async def get_invitation(slug: str):
+    """
+    Serve the generated invitation HTML file directly from Supabase storage
+    """
+    try:
+        bucket_name = "generated-invitations"
+        file_name = f"{slug}.html"
+        
+        # Get the invitation HTML content from Supabase storage
+        response = supabase.storage.from_(bucket_name).download(file_name)
+        html_content = response.decode('utf-8')
+        
+        return HTMLResponse(content=html_content)
+    except Exception as e:
+        print(f"Error retrieving invitation: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invitation with slug '{slug}' not found."
         )

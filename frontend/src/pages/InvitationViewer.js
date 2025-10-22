@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+// import { supabase } from '../supabaseClient'; // No longer needed for fetching URL
 
 function InvitationViewer() {
   const { slug } = useParams(); // Mengambil slug dari URL, misal: "haha--b0aazt"
@@ -16,30 +16,13 @@ function InvitationViewer() {
         return;
       }
 
-      try {
-        setIsLoading(true);
-        // Cari di tabel 'invitations' berdasarkan kolom 'slug'
-        const { data, error: dbError } = await supabase
-          .from('invitations')
-          .select('generated_html_url') // Kita hanya butuh URL HTML nya
-          .eq('slug', slug)
-          .single(); // Karena slug itu unik, kita hanya harapkan satu hasil
+      // Construct the URL directly to the backend endpoint
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+      const finalInvitationUrl = `${backendUrl}/invitations/${slug}`;
+      
+      setInvitationUrl(finalInvitationUrl);
+      setIsLoading(false);
 
-        if (dbError || !data) {
-          throw new Error("Undangan tidak ditemukan atau terjadi kesalahan saat mengambil data.");
-        }
-
-        if (data.generated_html_url) {
-          setInvitationUrl(data.generated_html_url);
-        } else {
-          throw new Error("URL Undangan belum di-generate. Silakan coba generate ulang.");
-        }
-
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
     };
 
     fetchInvitation();

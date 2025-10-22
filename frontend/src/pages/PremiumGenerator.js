@@ -203,6 +203,7 @@ function PremiumGenerator() {
         galeriFoto: formData.galeriFoto,
         musik: formData.musik
       }, user.id);
+      console.log("Uploaded Asset URLs:", assetUrls); // ADDED FOR DEBUGGING
 
       // 2. Siapkan data final untuk database
       const dataForDb = {
@@ -214,6 +215,7 @@ function PremiumGenerator() {
       delete dataForDb.fotoMempelaiWanita;
       delete dataForDb.galeriFoto;
       delete dataForDb.musik;
+      console.log("Data sent to backend:", dataForDb); // ADDED FOR DEBUGGING
 
 
       // 3. Simpan metadata awal ke database (tanpa URL final)
@@ -245,7 +247,7 @@ function PremiumGenerator() {
       const result = await response.json();
       
       // **PERBAIKAN UTAMA**: Gunakan URL dari respons backend
-      const finalUrl = result.invitation_public_url;
+      const finalUrl = `${backendUrl}/invitations/${savedInvitation.slug}`;
 
       if (!finalUrl) {
         throw new Error("Backend tidak mengembalikan URL undangan.");
@@ -506,7 +508,7 @@ Silakan coba lagi.`,
               </form>
             </div>
           ) : (
-             <div className="space-y-6">
+            <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="h-96 overflow-y-auto p-6 space-y-4">
                   {messages.map((message) => (
