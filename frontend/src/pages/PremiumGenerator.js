@@ -315,24 +315,6 @@ Silakan coba lagi.`,
                     {/* Input nama, tanggal, lokasi, dll. seperti sebelumnya */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nama Mempelai Wanita <span className="text-red-500">*</span>
-                      </label>
-                      <input type="text" name="namaMempelaiWanita" value={formData.namaMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama mempelai wanita" required />
-                    </div>
-                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nama Ayah Mempelai Wanita
-                      </label>
-                      <input type="text" name="namaAyahMempelaiWanita" value={formData.namaAyahMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ayah mempelai wanita" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nama Ibu Mempelai Wanita
-                      </label>
-                      <input type="text" name="namaIbuMempelaiWanita" value={formData.namaIbuMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ibu mempelai wanita" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nama Mempelai Pria <span className="text-red-500">*</span>
                       </label>
                       <input type="text" name="namaMempelaiPria" value={formData.namaMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama mempelai pria" required />
@@ -348,6 +330,24 @@ Silakan coba lagi.`,
                         Nama Ibu Mempelai Pria
                       </label>
                       <input type="text" name="namaIbuMempelaiPria" value={formData.namaIbuMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ibu mempelai pria" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nama Mempelai Wanita <span className="text-red-500">*</span>
+                      </label>
+                      <input type="text" name="namaMempelaiWanita" value={formData.namaMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama mempelai wanita" required />
+                    </div>
+                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nama Ayah Mempelai Wanita
+                      </label>
+                      <input type="text" name="namaAyahMempelaiWanita" value={formData.namaAyahMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ayah mempelai wanita" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nama Ibu Mempelai Wanita
+                      </label>
+                      <input type="text" name="namaIbuMempelaiWanita" value={formData.namaIbuMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ibu mempelai wanita" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -436,16 +436,6 @@ Silakan coba lagi.`,
                       )}
                     </div>
                     {/* ... input file lainnya ... */}
-                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Foto Mempelai Wanita
-                      </label>
-                      {!previews.fotoMempelaiWanita ? (
-                        <input type="file" name="fotoMempelaiWanita" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
-                      ) : (
-                        <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiWanita} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiWanita')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
-                      )}
-                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Foto Mempelai Pria
@@ -454,6 +444,16 @@ Silakan coba lagi.`,
                         <input type="file" name="fotoMempelaiPria" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
                       ) : (
                         <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiPria} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiPria')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
+                      )}
+                    </div>
+                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Foto Mempelai Wanita
+                      </label>
+                      {!previews.fotoMempelaiWanita ? (
+                        <input type="file" name="fotoMempelaiWanita" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
+                      ) : (
+                        <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiWanita} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiWanita')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
                       )}
                     </div>
                     <div>
