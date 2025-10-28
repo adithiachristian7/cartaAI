@@ -121,12 +121,14 @@ def create_invitation_html(data: dict) -> str:
                     </div>
                     <div class="mt-12 grid grid-cols-1 md:grid-cols-3 items-center gap-8">
                         <div class="text-center md:text-right animate-on-scroll">
+                            [BRIDE_PHOTO]
                             <h3 class="font-serif text-4xl text-theme-primary">[BRIDE_NAME]</h3>
                             <p class="font-semibold mt-2">Putri dari Pasangan</p>
                             <p>[BRIDE_PARENTS]</p>
                         </div>
                         <div class="font-script text-7xl text-theme-accent animate-on-scroll">&</div>
                         <div class="text-center md:text-left animate-on-scroll">
+                            [GROOM_PHOTO]
                             <h3 class="font-serif text-4xl text-theme-primary">[GROOM_NAME]</h3>
                             <p class="font-semibold mt-2">Putra dari Pasangan</p>
                             <p>[GROOM_PARENTS]</p>
@@ -163,6 +165,14 @@ def create_invitation_html(data: dict) -> str:
                             <div><div id="hours" class="text-4xl font-bold">0</div><div class="text-sm">Jam</div></div>
                             <div><div id="minutes" class="text-4xl font-bold">0</div><div class="text-sm">Menit</div></div>
                             <div><div id="seconds" class="text-4xl font-bold">0</div><div class="text-sm">Detik</div></div>
+                        </div>
+                    </div>
+                </section>
+                <section class="py-20 px-6 bg-theme-bg text-center">
+                    <div class="max-w-5xl mx-auto animate-on-scroll">
+                        <h2 class="font-serif text-4xl text-theme-primary mb-8">Galeri Foto</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="photo-gallery">
+                            [PHOTO_GALLERY]
                         </div>
                     </div>
                 </section>
@@ -256,6 +266,22 @@ def create_invitation_html(data: dict) -> str:
     prompt = prompt.replace("[INVITATION_STYLE]", data.get('jenisUndangan') or 'Modern Minimalist')
     prompt = prompt.replace("[MUSIC_URL]", data.get('musik') or 'N/A')
     prompt = prompt.replace("[SPECIAL_NOTES]", data.get('catatanKhusus') or 'N/A')
+
+    # Handle photo embedding
+    bride_photo_html = ""
+    if data.get('fotoMempelaiWanita'):
+        bride_photo_html = f'<img src="{data['fotoMempelaiWanita']}" alt="Foto Mempelai Wanita" class="w-32 h-32 rounded-full object-cover mx-auto mb-4">'
+    prompt = prompt.replace("[BRIDE_PHOTO]", bride_photo_html)
+
+    groom_photo_html = ""
+    if data.get('fotoMempelaiPria'):
+        groom_photo_html = f'<img src="{data['fotoMempelaiPria']}" alt="Foto Mempelai Pria" class="w-32 h-32 rounded-full object-cover mx-auto mb-4">'
+    prompt = prompt.replace("[GROOM_PHOTO]", groom_photo_html)
+
+    gallery_html = ""
+    if data.get('galeriFoto'):
+        gallery_html = "".join([f'<img src="{url}" alt="Gallery Image" class="w-full h-48 object-cover rounded-lg">' for url in data['galeriFoto']])
+    prompt = prompt.replace("[PHOTO_GALLERY]", gallery_html)
 
     musik_url = data.get("musik")
     audio_player_html = f'<audio id="background-music" loop><source src="{musik_url}" type="audio/mpeg"></audio>' if musik_url else ""
