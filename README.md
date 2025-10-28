@@ -163,5 +163,3 @@ Setiap kali Anda memulai `ngrok` dan mendapatkan URL baru, Anda harus memperbaru
 
 -   **Payment Notification URL**: Isi dengan URL `ngrok` untuk **backend** (port 8000) + `/api/payments/midtrans-notification`.
 -   **Finish URL**: Isi dengan URL `ngrok` untuk **frontend** (port 3000) + `/#/payment-status` (jika menggunakan HashRouter) atau `/payment-status` (jika menggunakan BrowserRouter).
-
-CartaAI
