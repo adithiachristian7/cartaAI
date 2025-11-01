@@ -1,67 +1,70 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Harga() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [pendingToken, setPendingToken] = useState(null);
 
   const payWithToken = (token) => {
     window.snap.pay(token, {
-      onSuccess: function(result){
+      onSuccess: function (result) {
         setPendingToken(null); // Hapus token jika pembayaran sukses
-        navigate(`/payment-status?order_id=${result.order_id}&status_code=${result.status_code}&transaction_status=${result.transaction_status}`);
+        navigate(
+          `/payment-status?order_id=${result.order_id}&status_code=${result.status_code}&transaction_status=${result.transaction_status}`
+        );
       },
-      onPending: function(result){
+      onPending: function (result) {
         // JANGAN NAVIGASI. Biarkan pengguna menyelesaikan pembayaran di popup.
         console.log("Payment is pending:", result);
       },
-      onError: function(result){
+      onError: function (result) {
         setPendingToken(null); // Hapus token jika pembayaran error
-        navigate(`/payment-status?order_id=${result.order_id}&status_code=${result.status_code}&transaction_status=failure`);
+        navigate(
+          `/payment-status?order_id=${result.order_id}&status_code=${result.status_code}&transaction_status=failure`
+        );
       },
-      onClose: function(){
+      onClose: function () {
         // Saat popup ditutup, token tetap tersimpan di state `pendingToken`
-        console.log('Popup closed, payment pending...');
-      }
+        console.log("Popup closed, payment pending...");
+      },
     });
   };
 
   const createNewPayment = async (plan) => {
     setLoading(true);
-    setError('');
+    setError("");
 
     if (!session) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     try {
-      const response = await fetch('/api/payments/create-transaction', {
-        method: 'POST',
+      const response = await fetch("/api/payments/create-transaction", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ plan: plan.planId || 'premium_monthly' }),
+        body: JSON.stringify({ plan: plan.planId || "premium_monthly" }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || 'Gagal membuat transaksi.');
+        throw new Error(data.detail || "Gagal membuat transaksi.");
       }
 
       if (data.token) {
         setPendingToken(data.token); // Simpan token baru
         payWithToken(data.token); // Langsung buka popup
       } else {
-        throw new Error('Token pembayaran tidak diterima dari server.');
+        throw new Error("Token pembayaran tidak diterima dari server.");
       }
-
     } catch (err) {
       setError(err.message);
     } finally {
@@ -77,36 +80,32 @@ function Harga() {
 
   const pricingPlans = [
     {
-      name: 'Basic',
-      price: 'Gratis',
-      description: 'Untuk memulai',
-      buttonText: 'Mulai Gratis',
-      buttonLink: '/chat',
-      features: [
-        'Desain terbatas',
-        'Fitur dasar',
-        'Hingga 100 undangan'
-      ]
+      name: "Basic",
+      price: "Gratis",
+      description: "Untuk memulai",
+      buttonText: "Mulai Gratis",
+      buttonLink: "/chat",
+      features: ["Desain terbatas", "Fitur dasar", "Hingga 100 undangan"],
     },
     {
-      name: 'Premium',
-      price: 'Rp 99rb',
-      period: '/bulan',
-      description: 'Untuk acara spesial',
-      buttonText: 'Pilih Paket Premium',
-      planId: 'premium_monthly',
+      name: "Premium",
+      price: "Rp 99rb",
+      period: "/bulan",
+      description: "Untuk acara spesial",
+      buttonText: "Pilih Paket Premium",
+      planId: "premium_monthly",
       isPopular: true,
       features: [
-        'Semua desain premium',
-        'Fitur lengkap & interaktif',
-        'Hingga 500 undangan',
-        'Dukungan prioritas'
-      ]
-    }
+        "Semua desain premium",
+        "Fitur lengkap & interaktif",
+        "Hingga 500 undangan",
+        "Dukungan prioritas",
+      ],
+    },
   ];
 
   return (
-    <section className="bg-white py-20 sm:py-24" id="pricing">
+    <section className="bg-blue-100 py-20 sm:py-24" id="pricing">
       <div className="container mx-auto px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
@@ -123,25 +122,29 @@ function Harga() {
               key={index}
               className={`relative flex flex-col rounded-2xl border p-8 pricing-card ${
                 plan.isPopular
-                  ? 'border-2 border-soft-blue shadow-2xl shadow-blue-200/50'
-                  : 'border-slate-200'
+                  ? "border-2 border-blue-700 shadow-2xl shadow-blue-200/50"
+                  : "border-slate-200"
               }`}
             >
               {plan.isPopular && (
-                <p className="absolute top-0 -translate-y-1/2 rounded-full bg-soft-blue px-4 py-1 text-sm font-semibold text-white">
-                  Terpopuler
+                <p className="">
+                 
                 </p>
               )}
-              <h3 className="text-lg font-semibold text-primary">{plan.name}</h3>
+              <h3 className="text-lg font-semibold text-primary">
+                {plan.name}
+              </h3>
               <p className="mt-4 text-4xl font-bold text-primary">
                 {plan.price}
                 {plan.period && (
-                  <span className="text-base font-medium text-secondary">{plan.period}</span>
+                  <span className="text-base font-medium text-secondary">
+                    {plan.period}
+                  </span>
                 )}
               </p>
               <p className="mt-1 text-secondary">{plan.description}</p>
 
-              {plan.name === 'Premium' ? (
+              {plan.name === "Premium" ? (
                 pendingToken ? (
                   <button
                     onClick={resumePayment}
@@ -156,13 +159,13 @@ function Harga() {
                     disabled={loading}
                     className="mt-8 w-full rounded-lg py-3 text-center font-bold btn-primary disabled:bg-blue-400"
                   >
-                    {loading ? 'Memproses...' : plan.buttonText}
+                    {loading ? "Memproses..." : plan.buttonText}
                   </button>
                 )
               ) : (
                 <Link
                   to={plan.buttonLink}
-                  className="mt-8 w-full rounded-lg py-3 text-center font-bold btn-secondary"
+                  className="mt-8 w-full rounded-lg py-3 text-center font-bold btn-primary"
                 >
                   {plan.buttonText}
                 </Link>
@@ -171,7 +174,9 @@ function Harga() {
               <ul className="mt-8 space-y-3 text-secondary">
                 {plan.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-green-500">check_circle</span>
+                    <span className="material-symbols-outlined text-green-500">
+                      check_circle
+                    </span>
                     {feature}
                   </li>
                 ))}

@@ -23,7 +23,7 @@ function Testimonials() {
   ];
 
   return (
-    <section className="bg-light-gray py-20 sm:py-24" id="testimonials">
+    <section className="bg-white py-20 sm:py-24" id="testimonials">
       <div className="container mx-auto px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">

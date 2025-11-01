@@ -32,13 +32,13 @@ function Features() {
             Semua yang Anda Butuhkan
           </h2>
           <p className="mt-4 text-lg text-secondary">
-            Fitur canggih untuk membuat undangan yang tak terlupakan.
+            Fitur canggih untuk membuat undangan pernikahan yang tak terlupakan.
           </p>
         </div>
         <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
             <div key={index} className="text-center">
-              <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-blue-100 p-4 text-soft-blue feature-icon">
+              <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-blue-700 p-4 text-white feature-icon">
                 <span className="material-symbols-outlined text-4xl">{feature.icon}</span>
               </div>
               <h3 className="text-lg font-bold text-primary">{feature.title}</h3>
