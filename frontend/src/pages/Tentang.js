@@ -10,7 +10,7 @@ function Tentang() {
       role: "Lead Developer",
       image: "/assets/team/adriel.jpg",
     },
-    { name: "Julio", role: "AI Specialist", image: "/assets/team/julio.jpg" },
+    { name: "Julio", role: "AI Specialist", image: "/assets/julio.jpg" },
     { name: "Adith", role: "UI/UX Designer", image: "/assets/adith.jpg" },
     {
       name: "Sandro",
