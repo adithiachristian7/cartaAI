@@ -59,6 +59,7 @@ def create_midtrans_transaction(payment: PaymentRequest, current_user: dict = De
 
 @router.post("/api/payments/midtrans-notification", tags=["Payments"])
 async def handle_midtrans_notification(payload: MidtransWebhookPayload):
+    # 1. Verifikasi signature key dari Midtrans untuk keamanan
     signature_payload = f"{payload.order_id}{payload.status_code}{payload.gross_amount}{MIDTRANS_SERVER_KEY}".encode()
     expected_signature = hashlib.sha512(signature_payload).hexdigest()
 
@@ -69,22 +70,38 @@ async def handle_midtrans_notification(payload: MidtransWebhookPayload):
     transaction_status = payload.transaction_status
     fraud_status = payload.fraud_status
 
-    if transaction_status == 'capture' or transaction_status == 'settlement':
-        if fraud_status == 'accept':
-            try:
-                subscription, error = supabase.table("subscriptions").update({
-                    "status": "active",
-                    "end_date": (datetime.utcnow() + timedelta(days=30)).isoformat()
-                }).eq("id", order_id).execute()
-                
-                if not subscription[1]:
-                    raise HTTPException(status_code=404, detail="Subscription not found.")
+    # 2. Proses hanya jika transaksi berhasil dan tidak fraud
+    if transaction_status in ['capture', 'settlement'] and fraud_status == 'accept':
+        try:
+            # Ambil data langganan terlebih dahulu untuk mendapatkan user_id
+            subscription_response = supabase.table("subscriptions").select("user_id").eq("id", order_id).single().execute()
+            
+            if not subscription_response.data:
+                raise HTTPException(status_code=404, detail=f"Subscription with order_id {order_id} not found.")
 
-                user_id = subscription[1][0]['user_id']
-                supabase.table("users").update({"subscription_status": "premium"}).eq("id", user_id).execute()
-                
-                return {"message": "Payment successful, user upgraded."}
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Webhook DB Error: {str(e)}")
+            user_id = subscription_response.data['user_id']
 
-    return {"message": "Webhook received and processed."}
+            # Update tabel subscriptions: set status ke active dan tanggal berakhir
+            end_date = datetime.utcnow() + timedelta(days=30)
+            supabase.table("subscriptions").update({
+                "status": "active",
+                "end_date": end_date.isoformat(),
+                "payment_id": payload.transaction_id
+            }).eq("id", order_id).execute()
+
+            # Update tabel users: set subscription_status ke premium
+            supabase.table("users").update({"subscription_status": "premium"}).eq("id", user_id).execute()
+            
+            return {"message": f"Payment for order {order_id} successful. User {user_id} upgraded to premium."}
+        
+        except Exception as e:
+            # Catat error untuk debugging
+            print(f"Webhook processing error for order {order_id}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Webhook DB Error: {str(e)}")
+
+    elif transaction_status in ['cancel', 'deny', 'expire']:
+        # Opsional: Tangani kasus pembayaran gagal
+        supabase.table("subscriptions").update({"status": "failed"}).eq("id", order_id).execute()
+        return {"message": f"Payment for order {order_id} failed or was cancelled."}
+
+    return {"message": "Webhook received and acknowledged, but no action taken."}

@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { session, logout } = useAuth();
+  const { session, logout, userProfile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,6 +72,14 @@ function Navbar() {
 
         {/* Auth buttons for Desktop */}
         <div className="hidden items-center gap-3 md:flex">
+          {userProfile?.subscription_status === 'premium' && (
+            <Link
+              to="/premium-generator"
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-105"
+            >
+              Premium Generator
+            </Link>
+          )}
           {session ? (
             <button
               onClick={handleLogout}

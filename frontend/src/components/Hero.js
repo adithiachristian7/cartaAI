@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function Hero() {
-  const { session } = useAuth();
+  const { session, userProfile } = useAuth();
 
   return (
     <section className="bg-white py-16 px-6">
@@ -23,12 +23,21 @@ function Hero() {
 
             {/* Tombol Aksi */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-6">
-              <Link
-                to="/chat"
-                className="btn-primary bg-blue-700 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md transition-all duration-300 transform hover:scale-105"
-              >
-                Coba Gratis
-              </Link>
+              {userProfile?.subscription_status === 'premium' ? (
+                <Link
+                  to="/premium-generator"
+                  className="btn-primary bg-blue-700 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md transition-all duration-300 transform hover:scale-105"
+                >
+                  Buat Undangan Sekarang
+                </Link>
+              ) : (
+                <Link
+                  to={session ? "/chat" : "/login"}
+                  className="btn-primary bg-blue-700 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md transition-all duration-300 transform hover:scale-105"
+                >
+                  Coba Gratis
+                </Link>
+              )}
               <a
                 href="/template"
                 className="border border-blue-700 text-blue-700 hover:bg-green-50 px-8 py-3 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105"

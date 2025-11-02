@@ -5,29 +5,60 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get the initial session
+    // Function to fetch user profile using .then()
+    const fetchUserProfile = (user) => {
+      if (!user) {
+        setUserProfile(null);
+        return;
+      }
+      supabase
+        .from('users')
+        .select('subscription_status')
+        .eq('id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          if (error && error.code !== 'PGRST116') {
+            console.error("Error fetching user profile:", error);
+            setUserProfile({ subscription_status: 'free' });
+          } else if (data) {
+            setUserProfile(data);
+          } else {
+            setUserProfile({ subscription_status: 'free' });
+          }
+        })
+        .catch(e => {
+            console.error("Exception fetching user profile:", e);
+            setUserProfile({ subscription_status: 'free' });
+        });
+    };
+
+    // Initial load
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      fetchUserProfile(session?.user);
       setLoading(false);
     });
 
-    // Listen for auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Set up listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      fetchUserProfile(session?.user);
     });
 
-    // Cleanup subscription on unmount
     return () => {
-      authListener.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
   const value = {
     session,
     user: session?.user,
+    userProfile,
+    loading,
     logout: () => supabase.auth.signOut(),
   };
 

@@ -1,19 +1,11 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
-import { supabase } from '../supabaseClient'; // Pastikan path ini benar
+import { supabase } from '../supabaseClient';
+import { useAuth } from '../context/AuthContext';
 
-// --- FUNGSI BARU UNTUK UPLOAD ASSETS ---
-/**
- * Meng-upload semua file aset (gambar, musik) ke Supabase Storage.
- * @param {object} files - Objek berisi file dari formData.
- * @param {string} userId - ID pengguna untuk membuat folder unik.
- * @returns {Promise<object>} Objek berisi URL publik dari file yang diupload.
- */
 const uploadAssets = async (files, userId) => {
   const uploadedUrls = {};
   const bucketName = 'invitation-assets';
-
-  // Fungsi helper untuk upload satu file
   const uploadFile = async (file, folder) => {
     if (!file) return null;
     const filePath = `${userId}/${folder}/${Date.now()}-${file.name}`;
@@ -24,70 +16,51 @@ const uploadAssets = async (files, userId) => {
     const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
     return data.publicUrl;
   };
-
-  // Upload foto mempelai wanita
   if (files.fotoMempelaiWanita) {
     uploadedUrls.fotoMempelaiWanita = await uploadFile(files.fotoMempelaiWanita, 'bride');
   }
-  // Upload foto mempelai pria
   if (files.fotoMempelaiPria) {
     uploadedUrls.fotoMempelaiPria = await uploadFile(files.fotoMempelaiPria, 'groom');
   }
-  // Upload musik
   if (files.musik) {
     uploadedUrls.musik = await uploadFile(files.musik, 'music');
   }
-  // Upload galeri foto
   if (files.galeriFoto && files.galeriFoto.length > 0) {
     uploadedUrls.galeriFoto = await Promise.all(
       files.galeriFoto.map(file => uploadFile(file, 'gallery'))
     );
   }
-
   return uploadedUrls;
 };
 
-
-/**
- * Menyimpan metadata undangan ke database.
- * @param {object} invitationData - Objek berisi data form DAN URL aset.
- * @returns {Promise<object|null>} Objek undangan yang baru dibuat.
- */
 const saveInvitationData = async (invitationData) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("User tidak ditemukan.");
-
-  // URL undangan tidak lagi dibuat di sini. Hanya slug yang dibuat.
   const randomString = Math.random().toString(36).substring(2, 8);
   const slug = `${invitationData.namaMempelaiPria || 'undangan'}-${randomString}`.toLowerCase().replace(/\s+/g, '-');
-
   const newInvitation = {
     user_id: user.id,
-    template_id: null, // atau dari form jika ada
+    template_id: null,
     prompt: `Undangan untuk ${invitationData.namaMempelaiPria} dan ${invitationData.namaMempelaiWanita}`,
-    generated_content: invitationData, // Data form + URL Aset
+    generated_content: invitationData,
     slug: slug,
-    // 'invitation_url' dan 'generated_html_url' akan diisi oleh backend
   };
-
   const { data: savedInvitation, error: insertError } = await supabase
     .from('invitations')
     .insert(newInvitation)
     .select()
     .single();
-
   if (insertError) {
-    if (insertError.code === '23505') { // Error duplikat slug
+    if (insertError.code === '23505') {
       throw new Error("Gagal membuat link unik, silakan coba generate lagi.");
     }
     throw insertError;
   }
-
-  return savedInvitation; // Mengembalikan record yang baru dibuat (termasuk slug)
+  return savedInvitation;
 };
 
-
 function PremiumGenerator() {
+  const { userProfile, loading } = useAuth();
   const [formData, setFormData] = useState({
     namaMempelaiPria: "",
     namaAyahMempelaiPria: "",
@@ -103,7 +76,7 @@ function PremiumGenerator() {
     fotoMempelaiPria: null,
     fotoMempelaiWanita: null,
     galeriFoto: [],
-    musik: null, // State baru untuk musik
+    musik: null,
     temaWarna: "",
     jenisUndangan: "",
     catatanKhusus: ""
@@ -124,7 +97,6 @@ function PremiumGenerator() {
     },
   ]);
 
-  const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [showChat, setShowChat] = useState(false);
@@ -176,26 +148,20 @@ function PremiumGenerator() {
   const handleGenerate = async (e) => {
     e.preventDefault();
     setGeneratedLink('');
-
     const requiredFields = ['namaMempelaiPria', 'namaMempelaiWanita', 'tanggalAcara', 'lokasiAcara'];
     if (requiredFields.some(field => !formData[field])) {
       alert("Mohon lengkapi field yang wajib diisi: " + requiredFields.filter(field => !formData[field]).join(", "));
       return;
     }
-
     setShowChat(true);
     setIsLoading(true);
-
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       alert("Anda harus login untuk membuat undangan.");
       setIsLoading(false);
       return;
     }
-
     try {
-      // --- ALUR BARU ---
-      // 1. Upload semua aset
       setLoadingMessage("Meng-upload gambar dan musik...");
       const assetUrls = await uploadAssets({
         fotoMempelaiPria: formData.fotoMempelaiPria,
@@ -203,78 +169,38 @@ function PremiumGenerator() {
         galeriFoto: formData.galeriFoto,
         musik: formData.musik
       }, user.id);
-      console.log("Uploaded Asset URLs:", assetUrls); // ADDED FOR DEBUGGING
-
-      // 2. Siapkan data final untuk database
-      const dataForDb = {
-        ...formData,
-        ...assetUrls, // Ganti file object dengan URL
-      };
-      // Hapus file object dari data final
+      const dataForDb = { ...formData, ...assetUrls };
       delete dataForDb.fotoMempelaiPria;
       delete dataForDb.fotoMempelaiWanita;
       delete dataForDb.galeriFoto;
       delete dataForDb.musik;
-      console.log("Data sent to backend:", dataForDb); // ADDED FOR DEBUGGING
-
-
-      // 3. Simpan metadata awal ke database (tanpa URL final)
       setLoadingMessage("Menyimpan data undangan...");
       const savedInvitation = await saveInvitationData(dataForDb);
-      
-      // 4. Panggil backend untuk generate file HTML
       setLoadingMessage("Menghubungi AI untuk membuat file undangan...");
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
-      
-      const dataForBackend = {
-        ...dataForDb,
-        slug: savedInvitation.slug, // Kirim slug yang sudah dibuat ke backend
-      };
-
+      const dataForBackend = { ...dataForDb, slug: savedInvitation.slug };
       const response = await fetch(`${backendUrl}/invitations/generate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataForBackend),
       });
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(`Error dari Backend: ${errorData?.detail || response.statusText}`);
       }
-
-      const result = await response.json();
-      
-      // **PERBAIKAN UTAMA**: Gunakan URL dari respons backend
       const finalUrl = `${backendUrl}/invitations/${savedInvitation.slug}`;
-
       if (!finalUrl) {
         throw new Error("Backend tidak mengembalikan URL undangan.");
       }
-
       const botResponse = {
         id: messages.length + 2,
         type: "bot",
-        // **PERBAIKAN UTAMA**: Tampilkan link yang bisa diklik
-        content: `🎉 Berhasil! Proses selesai.
-
-Silakan klik link di bawah untuk melihat undangan Anda:
-<a href="${finalUrl}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">Lihat Undangan: ${savedInvitation.slug}</a>`,
+        content: `🎉 Berhasil! Proses selesai.\n\nSilakan klik link di bawah untuk melihat undangan Anda:\n<a href="${finalUrl}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">Lihat Undangan: ${savedInvitation.slug}</a>`,
       };
       setMessages(prev => [...prev, botResponse]);
-      setGeneratedLink(finalUrl); // Simpan URL yang benar
-
+      setGeneratedLink(finalUrl);
     } catch (error) {
-      const botResponse = {
-        id: messages.length + 2,
-        type: "bot",
-        content: `Maaf, terjadi kesalahan:
-
-${error.message}
-
-Silakan coba lagi.`,
-      };
+      const botResponse = { id: messages.length + 2, type: "bot", content: `Maaf, terjadi kesalahan:\n\n${error.message}\n\nSilakan coba lagi.` };
       setMessages(prev => [...prev, botResponse]);
     } finally {
       setIsLoading(false);
@@ -282,8 +208,31 @@ Silakan coba lagi.`,
     }
   };
 
-  // ... (sisa komponen JSX tidak berubah secara signifikan, hanya penambahan input musik)
-  // Saya akan memasukkan kode JSX yang sudah diperbarui di bawah ini
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-lg text-gray-600">Memuat data pengguna...</p>
+      </div>
+    );
+  }
+
+  if (userProfile?.subscription_status !== 'premium') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center p-8 bg-white rounded-lg shadow-xl max-w-md mx-auto">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-full text-sm font-bold mb-4">
+            <span className="material-symbols-outlined">error</span>
+            Akses Ditolak
+          </div>
+          <h1 className="text-3xl font-bold text-primary mb-4">Fitur Khusus Pengguna Premium</h1>
+          <p className="text-md text-secondary mb-6">Maaf, halaman ini hanya dapat diakses oleh pengguna dengan status langganan premium. Silakan upgrade akun Anda untuk menikmati semua fitur eksklusif kami.</p>
+          <Link to="/harga" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-3 rounded-lg font-bold text-lg shadow-lg hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 inline-block">
+            Lihat Paket Harga
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
