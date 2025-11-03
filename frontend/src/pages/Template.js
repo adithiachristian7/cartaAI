@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const weddingTemplates = {
   elegan: [
@@ -12,7 +12,8 @@ const weddingTemplates = {
     {
       id: 2,
       title: "Elegan Minimalis",
-      description: "Tampilan lembut dengan dominasi putih dan dekorasi sederhana.",
+      description:
+        "Tampilan lembut dengan dominasi putih dan dekorasi sederhana.",
       imageUrl: "/assets/elegan_2.jpg",
     },
     {
@@ -66,15 +67,28 @@ const weddingTemplates = {
 
 const Template = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash === "#templates") {
+      const element = document.getElementById("templates");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location]);
 
   return (
     <div className="container mx-auto px-6 py-24">
-      <h1 className="text-4xl font-extrabold tracking-tighter text-primary text-center mb-8">
+      <h1
+        id="templates"
+        className="text-4xl font-extrabold tracking-tighter text-primary text-center mb-8"
+      >
         Template Undangan Pernikahan
       </h1>
       <p className="text-lg text-secondary text-center mb-12">
-        Pilih template undangan pernikahan dengan berbagai gaya yang sesuai dengan
-        selera Anda.
+        Pilih template undangan pernikahan dengan berbagai gaya yang sesuai
+        dengan selera Anda.
       </p>
 
       {Object.entries(weddingTemplates).map(([style, templates]) => (

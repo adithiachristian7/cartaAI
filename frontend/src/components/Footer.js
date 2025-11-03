@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -38,9 +39,9 @@ function Footer() {
                 </a>
               </li>
               <li>
-                <a className="hover:text-white" href="#examples">
-                  Contoh
-                </a>
+                <Link className="hover:text-white" to="/template#templates">
+                  Template
+                </Link>
               </li>
             </ul>
           </div>
