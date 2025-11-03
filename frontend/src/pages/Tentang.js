@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function Tentang() {
   // Data tim — tambahkan field `image` nanti sesuai path gambar
   const teamMembers = [
-    { name: "Prince", role: "CEO & Founder", image: "/assets/team/prince.jpg" },
+    { name: "Prince", role: "CEO & Founder", image: "/assets/prince.jpg" },
     {
       name: "Adriel",
       role: "Lead Developer",
