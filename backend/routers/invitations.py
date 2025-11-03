@@ -132,10 +132,7 @@ async def get_invitation(slug: str):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Invitation with slug '{slug}' not found."
-        )
-
-
-# RSVP Models
+        )# RSVP Models
 class RSVPRequest(BaseModel):
     nama: str
     kehadiran: str  # "Hadir" or "Tidak Hadir"
@@ -158,13 +155,12 @@ async def submit_rsvp(slug: str, rsvp: RSVPRequest):
         # Insert RSVP into database
         rsvp_data = {
             'invitation_id': invitation_id,
-            'nama': rsvp.nama,
-            'kehadiran': rsvp.kehadiran,
-            'ucapan': rsvp.ucapan,
-            'timestamp': 'now()'
+            'guest_name': rsvp.nama,
+            'rsvp_status': rsvp.kehadiran,
+            'message': rsvp.ucapan,
         }
 
-        response = supabase.table('rsvp_messages').insert(rsvp_data).execute()
+        response = supabase.table('guestbook_entries').insert(rsvp_data).execute()
 
         return {"message": "RSVP submitted successfully!", "data": response.data[0]}
 
@@ -190,9 +186,19 @@ async def get_rsvp_messages(slug: str):
         invitation_id = invitation_check.data[0]['id']
 
         # Get RSVP messages
-        response = supabase.table('rsvp_messages').select('*').eq('invitation_id', invitation_id).order('timestamp', desc=True).execute()
+        response = supabase.table('guestbook_entries').select('guest_name, rsvp_status, message, created_at').eq('invitation_id', invitation_id).order('created_at', desc=True).execute()
 
-        return {"messages": response.data}
+        # Map to expected output format
+        mapped_data = []
+        for item in response.data:
+            mapped_data.append({
+                'nama': item.get('guest_name'),
+                'kehadiran': item.get('rsvp_status'),
+                'ucapan': item.get('message'),
+                'timestamp': item.get('created_at')
+            })
+
+        return {"messages": mapped_data}
 
     except Exception as e:
         print(f"Error retrieving RSVP messages: {e}")
@@ -224,12 +230,12 @@ async def submit_comment(slug: str, comment: CommentRequest):
         # Insert comment into database
         comment_data = {
             'invitation_id': invitation_id,
-            'nama': comment.nama,
-            'pesan': comment.pesan,
-            'timestamp': 'now()'
+            'guest_name': comment.nama,
+            'message': comment.pesan,
+            'rsvp_status': None, # Set to None for comments
         }
 
-        response = supabase.table('comments').insert(comment_data).execute()
+        response = supabase.table('guestbook_entries').insert(comment_data).execute()
 
         return {"message": "Comment submitted successfully!", "data": response.data[0]}
 
@@ -255,9 +261,18 @@ async def get_comments(slug: str):
         invitation_id = invitation_check.data[0]['id']
 
         # Get comments
-        response = supabase.table('comments').select('*').eq('invitation_id', invitation_id).order('timestamp', desc=True).execute()
+        response = supabase.table('guestbook_entries').select('guest_name, message, created_at').is_('rsvp_status', None).eq('invitation_id', invitation_id).order('created_at', desc=True).execute()
 
-        return {"comments": response.data}
+        # Map to expected output format
+        mapped_data = []
+        for item in response.data:
+            mapped_data.append({
+                'nama': item.get('guest_name'),
+                'pesan': item.get('message'),
+                'timestamp': item.get('created_at')
+            })
+
+        return {"comments": mapped_data}
 
     except Exception as e:
         print(f"Error retrieving comments: {e}")

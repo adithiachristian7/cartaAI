@@ -62,24 +62,22 @@ def create_invitation_html(data: dict) -> str:
     6. If music URL is provided, include an audio player with toggle button; otherwise, omit it.
     7. Ensure the HTML is complete, functional, and includes all provided images and URLs.
     8. Set the background image for cover and hero sections to [BACKGROUND_URL] using CSS background-size: cover to prevent breaking.
-    9. For RSVP, modify the JavaScript to use fetch API for realtime: POST to '/invitations/[SLUG]/rsvp' with JSON body {nama, kehadiran, ucapan} to submit RSVP, and load messages on page load and after submission by GET from '/invitations/[SLUG]/rsvp'. Remove localStorage usage. Use the correct endpoint '/invitations/[SLUG]/rsvp' for both POST and GET. Display success message on successful submission and error message "Gagal mengirim konfirmasi. Silakan coba lagi." on failure.
-    10. Use 'Pemberkatan Nikah' instead of 'Akad Nikah' in the event details section to make it more general.
-    11. Ensure all invitation phrases, greetings, and calls to action are neutral and suitable for all religions, avoiding specific religious references. Use universal wedding language like "Join us in celebrating our union" instead of religion-specific terms.
-    12. In the RSVP JavaScript, add try-catch blocks for fetch requests. If loading messages fails, display "Gagal memuat pesan. Coba lagi nanti." in the guest book section. For comments, use POST to '/invitations/[SLUG]/comments' to submit, and GET from '/invitations/[SLUG]/comments' to load comments.
-    13. Add a Comments section after RSVP with a form (name, message), JavaScript to POST to '/invitations/[SLUG]/comments' with JSON body {nama, pesan} for submission and GET from '/invitations/[SLUG]/comments' to load and display comments in real-time. Include try-catch for fetch requests in comments JS, displaying error messages if loading fails. Display success message on successful comment submission and error message "Gagal mengirim komentar. Silakan coba lagi." on failure.
-    14. Based on the Religion field ([RELIGION]), customize the opening and closing phrases to be appropriate for that religion. For example:
-        - If Islam: Use phrases like "Assalamualaikum" for opening, "Wassalamualaikum" for closing, and include relevant Islamic wedding blessings.
-        - If Kristen: Use phrases like "Salam Sejahtera" for opening, "Tuhan Memberkati" for closing, and include Christian wedding blessings.
-        - If Hindu: Use phrases like "Om Swastiastu" for opening, "Om Shanti Shanti Shanti Om" for closing, and include Hindu wedding blessings.
-        - If Buddha: Use phrases like "Namo Buddhaya" for opening, "Sadhu Sadhu Sadhu" for closing, and include Buddhist wedding blessings.
-        - If Lainnya or unspecified: Use neutral universal phrases.
-    15. Include appropriate religious verses or quotes in the invitation based on the Religion field. For example:
-        - Islam: Include verses from Al-Quran like "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu istri-istri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya di antaramu rasa kasih dan sayang." (Ar-Rum: 21)
-        - Kristen: Include verses from Bible like "Karena itu seorang laki-laki akan meninggalkan ayahnya dan ibunya dan bersatu dengan isterinya, sehingga keduanya itu menjadi satu daging." (Kejadian 2:24)
-        - Hindu: Include quotes like "May the love between you two be as eternal as the stars in the sky."
-        - Buddha: Include quotes like "All that we are is the result of what we have thought. The mind is everything. What we think we become."
-        - If Lainnya or unspecified: Use inspirational quotes about love and marriage.
-    16. Do not add any explanations. The output should be only the raw HTML code.
+    9. **Guestbook and Comments JavaScript Logic (VERY IMPORTANT):**
+        - Create two JavaScript functions: `loadRsvp()` and `loadComments()`.
+        - **`loadRsvp()` function:**
+            - It must perform a `fetch` GET request to `/invitations/[SLUG]/rsvp`.
+            - The response will be a JSON object like `{ "messages": [...] }`. You **must** access the array using `data.messages`.
+            - On success, it must clear the RSVP display container (e.g., `<div id="rsvp-list">`).
+            - Then, it must loop through the `data.messages` array. For each message, create a new HTML element and display `nama`, `kehadiran`, and `ucapan`. Append this element to the container.
+        - **`loadComments()` function:**
+            - It must perform a `fetch` GET request to `/invitations/[SLUG]/comments`.
+            - The response will be a JSON object like `{ "comments": [...] }`. You **must** access the array using `data.comments`.
+            - It must clear the comments display container (e.g., `<div id="comments-list">`) and render the list of comments by looping through the `data.comments` array, displaying `nama` and `pesan`.
+        - **On Page Load:** When the page's DOM is fully loaded, call both `loadRsvp()` and `loadComments()` to display the initial data.
+        - **On Form Submission:**
+            - For the RSVP form, after a successful `POST` to `/invitations/[SLUG]/rsvp`, you **must** call `loadRsvp()` again to refresh the list.
+            - For the Comments form, after a successful `POST` to `/invitations/[SLUG]/comments`, you **must** call `loadComments()` again to refresh the list.
+        - Display error messages like "Gagal memuat pesan..." inside the respective containers if the `fetch` calls fail.
     """
 
     # Helper to format date for JS
