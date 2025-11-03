@@ -13,7 +13,7 @@ from ai_generator import create_invitation_html
 load_dotenv()
 url: str = os.environ.get("SUPABASE_URL")
 # PENTING: Gunakan Service Role Key untuk bypass RLS saat update dari backend
-key: str = os.environ.get("SUPABASE_SERVICE_KEY") 
+key: str = os.environ.get("SUPABASE_SERVICE_KEY")
 
 if not url or not key:
     raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in .env file")
@@ -121,15 +121,147 @@ async def get_invitation(slug: str):
     try:
         bucket_name = "generated-invitations"
         file_name = f"{slug}.html"
-        
+
         # Get the invitation HTML content from Supabase storage
         response = supabase.storage.from_(bucket_name).download(file_name)
         html_content = response.decode('utf-8')
-        
+
         return HTMLResponse(content=html_content)
     except Exception as e:
         print(f"Error retrieving invitation: {e}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Invitation with slug '{slug}' not found."
+        )
+
+
+# RSVP Models
+class RSVPRequest(BaseModel):
+    nama: str
+    kehadiran: str  # "Hadir" or "Tidak Hadir"
+    ucapan: Optional[str] = None
+
+
+@router.post("/{slug}/rsvp", status_code=status.HTTP_201_CREATED)
+async def submit_rsvp(slug: str, rsvp: RSVPRequest):
+    """
+    Submit an RSVP message for the invitation and store it in Supabase.
+    """
+    try:
+        # Check if invitation exists
+        invitation_check = supabase.table('invitations').select('id').eq('slug', slug).execute()
+        if not invitation_check.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{slug}' not found.")
+
+        invitation_id = invitation_check.data[0]['id']
+
+        # Insert RSVP into database
+        rsvp_data = {
+            'invitation_id': invitation_id,
+            'nama': rsvp.nama,
+            'kehadiran': rsvp.kehadiran,
+            'ucapan': rsvp.ucapan,
+            'timestamp': 'now()'
+        }
+
+        response = supabase.table('rsvp_messages').insert(rsvp_data).execute()
+
+        return {"message": "RSVP submitted successfully!", "data": response.data[0]}
+
+    except Exception as e:
+        print(f"Error submitting RSVP: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to submit RSVP: {str(e)}"
+        )
+
+
+@router.get("/{slug}/rsvp")
+async def get_rsvp_messages(slug: str):
+    """
+    Retrieve all RSVP messages for the invitation.
+    """
+    try:
+        # Get invitation ID
+        invitation_check = supabase.table('invitations').select('id').eq('slug', slug).execute()
+        if not invitation_check.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{slug}' not found.")
+
+        invitation_id = invitation_check.data[0]['id']
+
+        # Get RSVP messages
+        response = supabase.table('rsvp_messages').select('*').eq('invitation_id', invitation_id).order('timestamp', desc=True).execute()
+
+        return {"messages": response.data}
+
+    except Exception as e:
+        print(f"Error retrieving RSVP messages: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve RSVP messages: {str(e)}"
+        )
+
+
+# Comments Models
+class CommentRequest(BaseModel):
+    nama: str
+    pesan: str
+
+
+@router.post("/{slug}/comments", status_code=status.HTTP_201_CREATED)
+async def submit_comment(slug: str, comment: CommentRequest):
+    """
+    Submit a comment for the invitation and store it in Supabase.
+    """
+    try:
+        # Check if invitation exists
+        invitation_check = supabase.table('invitations').select('id').eq('slug', slug).execute()
+        if not invitation_check.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{slug}' not found.")
+
+        invitation_id = invitation_check.data[0]['id']
+
+        # Insert comment into database
+        comment_data = {
+            'invitation_id': invitation_id,
+            'nama': comment.nama,
+            'pesan': comment.pesan,
+            'timestamp': 'now()'
+        }
+
+        response = supabase.table('comments').insert(comment_data).execute()
+
+        return {"message": "Comment submitted successfully!", "data": response.data[0]}
+
+    except Exception as e:
+        print(f"Error submitting comment: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to submit comment: {str(e)}"
+        )
+
+
+@router.get("/{slug}/comments")
+async def get_comments(slug: str):
+    """
+    Retrieve all comments for the invitation.
+    """
+    try:
+        # Get invitation ID
+        invitation_check = supabase.table('invitations').select('id').eq('slug', slug).execute()
+        if not invitation_check.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{slug}' not found.")
+
+        invitation_id = invitation_check.data[0]['id']
+
+        # Get comments
+        response = supabase.table('comments').select('*').eq('invitation_id', invitation_id).order('timestamp', desc=True).execute()
+
+        return {"comments": response.data}
+
+    except Exception as e:
+        print(f"Error retrieving comments: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve comments: {str(e)}"
         )

@@ -8,7 +8,8 @@ const uploadAssets = async (files, userId) => {
   const bucketName = 'invitation-assets';
   const uploadFile = async (file, folder) => {
     if (!file) return null;
-    const filePath = `${userId}/${folder}/${Date.now()}-${file.name}`;
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filePath = `${userId}/${folder}/${Date.now()}-${sanitizedName}`;
     const { error } = await supabase.storage.from(bucketName).upload(filePath, file);
     if (error) {
       throw new Error(`Gagal meng-upload ${file.name}: ${error.message}`);
@@ -79,6 +80,7 @@ function PremiumGenerator() {
     musik: null,
     temaWarna: "",
     jenisUndangan: "",
+    agama: "",
     catatanKhusus: ""
   });
 
@@ -170,10 +172,7 @@ function PremiumGenerator() {
         musik: formData.musik
       }, user.id);
       const dataForDb = { ...formData, ...assetUrls };
-      delete dataForDb.fotoMempelaiPria;
-      delete dataForDb.fotoMempelaiWanita;
-      delete dataForDb.galeriFoto;
-      delete dataForDb.musik;
+      // Note: Do not delete the asset URLs as they are needed for the invitation generation
       setLoadingMessage("Menyimpan data undangan...");
       const savedInvitation = await saveInvitationData(dataForDb);
       setLoadingMessage("Menghubungi AI untuk membuat file undangan...");
@@ -353,6 +352,25 @@ function PremiumGenerator() {
                         <option value="forest-green">Forest Green</option>
                         <option value="purple-royal">Purple Royal</option>
                         <option value="sunset-orange">Sunset Orange</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Agama
+                      </label>
+                      <select
+                        name="agama"
+                        value={formData.agama}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                      >
+                        <option value="">Pilih agama</option>
+                        <option value="islam">Islam</option>
+                        <option value="kristen">Kristen</option>
+                        <option value="hindu">Hindu</option>
+                        <option value="buddha">Buddha</option>
+                        <option value="lainnya">Lainnya</option>
                       </select>
                     </div>
 

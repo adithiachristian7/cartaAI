@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 
 function Tentang() {
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const teamMembers = [
     { name: "Prince", role: "CEO & Founder", image: "/assets/prince.jpg" },
     {
@@ -14,8 +17,19 @@ function Tentang() {
       name: "Sandro",
       role: "Marketing Manager",
       image: "/assets/sandro.jpg",
+      objectPosition: "center 0%",
     },
   ];
+
+  const openModal = (member) => {
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -228,12 +242,12 @@ function Tentang() {
               key={index}
               className="group text-center transform transition-transform hover:scale-105"
             >
-              <div className="overflow-hidden rounded-2xl w-32 h-32 mx-auto mb-4 shadow-md border-2 border-white">
+              <div className="overflow-hidden rounded-2xl w-32 h-32 mx-auto mb-4 shadow-md border-2 border-white cursor-pointer" onClick={() => openModal(member)}>
                 <img
                   src={member.image}
                   alt={member.name}
                   className="w-full h-full object-cover"
-                  style={{ objectPosition: member.objectPosition }}
+                  style={{ objectPosition: member.objectPosition, transform: member.name === "Adriel" ? 'scale(1.1)' : 'scale(1)' }}
                   onError={(e) => {
                     e.target.src = "/assets/team/default-avatar.png";
                   }}
@@ -245,6 +259,33 @@ function Tentang() {
           ))}
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && selectedMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeModal}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+              onClick={closeModal}
+            >
+              &times;
+            </button>
+            <div className="text-center">
+              <img
+                src={selectedMember.image}
+                alt={selectedMember.name}
+                className="w-64 h-64 object-cover rounded-2xl mx-auto mb-4"
+                style={{ objectPosition: selectedMember.objectPosition, transform: selectedMember.name === "Adriel" ? 'scale(1.1)' : 'scale(1)' }}
+                onError={(e) => {
+                  e.target.src = "/assets/team/default-avatar.png";
+                }}
+              />
+              <h3 className="text-2xl font-bold text-gray-900">{selectedMember.name}</h3>
+              <p className="text-gray-600">{selectedMember.role}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
