@@ -59,14 +59,15 @@ Apakah ada detail tambahan yang ingin Anda sampaikan? Misalnya:
               Buat Undangan Pernikahan dengan AI
             </h1>
             <p className="text-lg text-secondary">
-              Berikan detail desain undangan anda dan ciptakan undangan yang cantik
+              Berikan detail desain undangan anda dan ciptakan undangan yang
+              cantik
             </p>
           </div>
 
           {/* Chat Container */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Chat Header */}
-            <div className="bg-soft-blue px-6 py-4">
+            <div className="bg-blue-700 px-6 py-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                   <span className="material-symbols-outlined text-soft-blue">
@@ -143,7 +144,7 @@ Apakah ada detail tambahan yang ingin Anda sampaikan? Misalnya:
                 <button
                   type="submit"
                   disabled={isLoading || !inputMessage.trim()}
-                  className="btn-primary px-6 py-3 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-blue-700 text-white px-6 py-3 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-800 transition-colors"
                 >
                   <span className="material-symbols-outlined">send</span>
                 </button>

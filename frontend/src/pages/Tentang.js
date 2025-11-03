@@ -1,27 +1,42 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 function Tentang() {
-  // Data tim — tambahkan field `image` nanti sesuai path gambar
   const teamMembers = [
-    { name: "Prince", role: "CEO & Founder", image: "/assets/team/prince.jpg" },
-    {
-      name: "Adriel",
-      role: "Lead Developer",
-      image: "/assets/team/adriel.jpg",
-    },
-    { name: "Julio", role: "AI Specialist", image: "/assets/julio.jpg" },
-    { name: "Adith", role: "UI/UX Designer", image: "/assets/adith.jpg" },
-    {
-      name: "Sandro",
-      role: "Marketing Manager",
-      image: "/assets/team/sandro.jpg",
-    },
-  ];
+  {
+    name: "Prince",
+    role: "CEO & Founder",
+    image: "/assets/team/prince.jpg",
+    objectPosition: "50% 50%",
+  },
+  {
+    name: "Adriel",
+    role: "Lead Developer",
+    image: "/assets/adriel.jpg",
+    objectPosition: "50% 90%", 
+  },
+  {
+    name: "Julio",
+    role: "AI Specialist",
+    image: "/assets/julio.jpg",
+    objectPosition: "50% 50%",
+  },
+  {
+    name: "Adith",
+    role: "UI/UX Designer",
+    image: "/assets/adith.jpg",
+    objectPosition: "50% 60%",
+  },
+  {
+    name: "Sandro",
+    role: "Marketing Manager",
+    image: "/assets/sandro.jpg",
+    objectPosition: "50% 30%",
+  },
+];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section – Teks di bawah dengan overlay halus */}
+      {/* Hero Section */}
       <div
         className="relative bg-cover bg-center h-64 md:h-[400px]"
         style={{ backgroundImage: "url('/assets/bg_hero1.jpg')" }}
@@ -30,10 +45,8 @@ function Tentang() {
         <div className="absolute bottom-6 left-0 right-0 px-6">
           <div className="container mx-auto text-center text-white">
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2">
-              {" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300"></span>
             </h1>
-            <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto"></p>
           </div>
         </div>
       </div>
@@ -52,7 +65,7 @@ function Tentang() {
         </div>
       </div>
 
-      {/* Vision & Mission – Card dengan shadow lembut */}
+      {/* Vision & Mission */}
       <div className="py-16 bg-gradient-to-br from-blue-50/60 to-purple-50/40 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
@@ -212,11 +225,12 @@ function Tentang() {
         </div>
       </div>
 
-      {/* Team Section – dengan gambar */}
+      {/* Team Section */}
       <div className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Tim <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-700">
+            Tim{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-700">
               cartaAI
             </span>{" "}
           </h2>
@@ -236,8 +250,9 @@ function Tentang() {
                   src={member.image}
                   alt={member.name}
                   className="w-full h-full object-cover"
+                  style={{ objectPosition: member.objectPosition }}
                   onError={(e) => {
-                    e.target.src = "/assets/team/default-avatar.png"; // fallback jika gambar error
+                    e.target.src = "/assets/team/default-avatar.png";
                   }}
                 />
               </div>
