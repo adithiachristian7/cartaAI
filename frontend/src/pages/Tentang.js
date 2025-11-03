@@ -6,14 +6,14 @@ function Tentang() {
     {
       name: "Adriel",
       role: "Lead Developer",
-      image: "/assets/team/adriel.jpg",
+      image: "/assets/adriel.jpg",
     },
     { name: "Julio", role: "AI Specialist", image: "/assets/julio.jpg" },
     { name: "Adith", role: "UI/UX Designer", image: "/assets/adith.jpg" },
     {
       name: "Sandro",
       role: "Marketing Manager",
-      image: "/assets/team/sandro.jpg",
+      image: "/assets/sandro.jpg",
     },
   ];
 
