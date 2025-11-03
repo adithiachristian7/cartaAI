@@ -2,7 +2,7 @@ import React from "react";
 
 function Tentang() {
   const teamMembers = [
-    { name: "Prince", role: "CEO & Founder", image: "/assets/team/prince.jpg" },
+    { name: "Prince", role: "CEO & Founder", image: "/assets/prince.jpg" },
     {
       name: "Adriel",
       role: "Lead Developer",
