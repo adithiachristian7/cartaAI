@@ -4,6 +4,9 @@
 from fastapi import FastAPI
 from routers import auth, payments, invitations
 
+print("--- SERVER BERJALAN DENGAN KODE VERSI BARU ---")
+
+
 # Initialize the main FastAPI application
 app = FastAPI(
     title="CartaAI Backend",
