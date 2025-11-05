@@ -177,8 +177,10 @@ function PremiumGenerator() {
       const savedInvitation = await saveInvitationData(dataForDb);
       setLoadingMessage("Menghubungi AI untuk membuat file undangan...");
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
-      const dataForBackend = { ...dataForDb, slug: savedInvitation.slug };
-      const response = await fetch(`${backendUrl}/invitations/generate`, {
+      const endpoint = user.subscription_status === "free"
+        ? `${backendUrl}/invitations/free-generate`
+        : `${backendUrl}/invitations/generate`;
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataForBackend),
