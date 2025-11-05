@@ -14,27 +14,28 @@ app = FastAPI(
 # Configure CORS (Cross-Origin Resource Sharing)
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = [
-    "http://localhost",
-    "http://localhost:3000",  # Alamat default React frontend
-    # Anda bisa menambahkan alamat frontend Anda yang sudah di-deploy di sini nanti
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Izinkan semua metode (GET, POST, etc)
-    allow_headers=["*"],  # Izinkan semua header
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-
-# Include the routers from the other files
+# Include routers
 app.include_router(auth.router)
 app.include_router(payments.router)
 app.include_router(invitations.router)
 
 @app.get("/", tags=["Root"])
 def read_root():
-    """A simple health check endpoint."""
     return {"message": "Welcome to the CartaAI Backend!"}
+
+# ✅ Preflight OPTIONS handler (letakkan di paling bawah)
+from fastapi import Response
+
+@app.options("/{rest_of_path:path}")
+async def preflight_handler(rest_of_path: str):
+    return Response(status_code=200)
