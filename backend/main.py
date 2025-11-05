@@ -15,19 +15,20 @@ app = FastAPI(
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
-    "http://localhost",
-    "http://localhost:3000",  # Alamat default React frontend
-    # Anda bisa menambahkan alamat frontend Anda yang sudah di-deploy di sini nanti
+    "https://cartaai.my.id",
+    "https://www.cartaai.my.id",
+    "https://api.cartaai.my.id",
+    "http://localhost:3000",
+    "http://localhost:8000"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Izinkan semua metode (GET, POST, etc)
-    allow_headers=["*"],  # Izinkan semua header
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
 
 # Include the routers from the other files
 app.include_router(auth.router)

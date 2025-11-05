@@ -183,7 +183,7 @@ function PremiumGenerator() {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataForBackend),
+        body: JSON.stringify(dataForDb),
       });
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
