@@ -4,9 +4,9 @@ function Tentangg() {
   // data tim
   const teamMembers = [
     { name: 'Prince', role: 'CEO & Founder' },
-    { name: 'Adriel', role: 'Lead Developer' },
-    { name: 'Julio', role: 'AI Specialist' },
-    { name: 'Adith', role: 'UI/UX Designer' },
+    { name: 'Adriel', role: 'Lead Developer & AI Specialist' },
+    { name: 'Julio', role: 'AI Specialist & Backend Developer' },
+    { name: 'Adith', role: 'UI/UX & Frontend Developer' },
     { name: 'Sandro', role: 'Marketing Manager' },
   ];
 
