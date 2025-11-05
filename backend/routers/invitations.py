@@ -43,6 +43,7 @@ class InvitationRequest(BaseModel):
     tempatResepsi: Optional[str] = None
     temaWarna: Optional[str] = None
     jenisUndangan: Optional[str] = None
+    agama: Optional[str] = None
     catatanKhusus: Optional[str] = None
     musik: Optional[str] = None
     fotoMempelaiPria: Optional[str] = None

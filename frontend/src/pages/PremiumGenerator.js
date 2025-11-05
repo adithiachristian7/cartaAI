@@ -175,6 +175,13 @@ function PremiumGenerator() {
       // Note: Do not delete the asset URLs as they are needed for the invitation generation
       setLoadingMessage("Menyimpan data undangan...");
       const savedInvitation = await saveInvitationData(dataForDb);
+
+      // Prepare data for the AI backend, ensuring the slug is included
+      const dataForBackend = {
+        ...dataForDb,
+        slug: savedInvitation.slug,
+      };
+
       setLoadingMessage("Menghubungi AI untuk membuat file undangan...");
       const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
       const endpoint = user.subscription_status === "free"
@@ -183,7 +190,7 @@ function PremiumGenerator() {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataForDb),
+        body: JSON.stringify(dataForBackend),
       });
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
