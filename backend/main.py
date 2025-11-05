@@ -14,7 +14,11 @@ app = FastAPI(
 # Configure CORS (Cross-Origin Resource Sharing)
 from fastapi.middleware.cors import CORSMiddleware
 
-origins = ["*"]
+origins = [
+    "https://cartaai.my.id",
+    "http://localhost",
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,10 +36,3 @@ app.include_router(invitations.router)
 @app.get("/", tags=["Root"])
 def read_root():
     return {"message": "Welcome to the CartaAI Backend!"}
-
-# ✅ Preflight OPTIONS handler (letakkan di paling bawah)
-from fastapi import Response
-
-@app.options("/{rest_of_path:path}")
-async def preflight_handler(rest_of_path: str):
-    return Response(status_code=200)

@@ -62,22 +62,19 @@ def create_invitation_html(data: dict) -> str:
     6. If music URL is provided, include an audio player with toggle button; otherwise, omit it.
     7. Ensure the HTML is complete, functional, and includes all provided images and URLs.
     8. Set the background image for cover and hero sections to [BACKGROUND_URL] using CSS background-size: cover to prevent breaking.
-    9. **Guestbook and Comments JavaScript Logic (VERY IMPORTANT):**
-        - Create two JavaScript functions: `loadRsvp()` and `loadComments()`.
-        - **`loadRsvp()` function:**
+    9. **RSVP & Guestbook JavaScript Logic (VERY IMPORTANT):**
+        - Create one combined section for "RSVP & Ucapan".
+        - This section must contain a single form with inputs for `nama` (name), `kehadiran` (attendance status: Hadir/Tidak Hadir), and `ucapan` (message).
+        - Create one JavaScript function, for example `loadRsvpMessages()`.
+        - **`loadRsvpMessages()` function:**
             - It must perform a `fetch` GET request to `/invitations/[SLUG]/rsvp`.
             - The response will be a JSON object like `{ "messages": [...] }`. You **must** access the array using `data.messages`.
-            - On success, it must clear the RSVP display container (e.g., `<div id="rsvp-list">`).
-            - Then, it must loop through the `data.messages` array. For each message, create a new HTML element and display `nama`, `kehadiran`, and `ucapan`. Append this element to the container.
-        - **`loadComments()` function:**
-            - It must perform a `fetch` GET request to `/invitations/[SLUG]/comments`.
-            - The response will be a JSON object like `{ "comments": [...] }`. You **must** access the array using `data.comments`.
-            - It must clear the comments display container (e.g., `<div id="comments-list">`) and render the list of comments by looping through the `data.comments` array, displaying `nama` and `pesan`.
-        - **On Page Load:** When the page's DOM is fully loaded, call both `loadRsvp()` and `loadComments()` to display the initial data.
+            - On success, it must clear the guestbook display container (e.g., `<div id="guestbook-list">`).
+            - Then, it must loop through the `data.messages` array. For each message, create a new HTML element and display the `nama`, `kehadiran`, and `ucapan`. Append this element to the container.
+        - **On Page Load:** When the page's DOM is fully loaded, call `loadRsvpMessages()` to display the initial data.
         - **On Form Submission:**
-            - For the RSVP form, after a successful `POST` to `/invitations/[SLUG]/rsvp`, you **must** call `loadRsvp()` again to refresh the list.
-            - For the Comments form, after a successful `POST` to `/invitations/[SLUG]/comments`, you **must** call `loadComments()` again to refresh the list.
-        - Display error messages like "Gagal memuat pesan..." inside the respective containers if the `fetch` calls fail.
+            - After a successful `POST` to `/invitations/[SLUG]/rsvp` with the form data, you **must** call `loadRsvpMessages()` again to refresh the list with the new message.
+        - Display an error message like "Gagal memuat pesan..." inside the container if the `fetch` call fails.
     """
 
     # Helper to format date for JS
