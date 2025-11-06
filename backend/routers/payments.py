@@ -5,7 +5,10 @@ import hashlib
 from datetime import datetime, timedelta
 from dependencies import supabase, snap, get_current_user, MIDTRANS_SERVER_KEY
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/payments",
+    tags=["Payments"],
+)
 
 class PaymentRequest(BaseModel):
     plan: str
@@ -23,7 +26,7 @@ class MidtransWebhookPayload(BaseModel):
     fraud_status: str
     currency: str
 
-@router.post("/api/payments/create-transaction", tags=["Payments"])
+@router.post("/create-transaction", tags=["Payments"])
 def create_midtrans_transaction(payment: PaymentRequest, current_user: dict = Depends(get_current_user)):
     order_id = str(uuid.uuid4())
     user_id = current_user.id
@@ -57,7 +60,7 @@ def create_midtrans_transaction(payment: PaymentRequest, current_user: dict = De
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Midtrans Library Error: {str(e)}")
 
-@router.post("/api/payments/midtrans-notification", tags=["Payments"])
+@router.post("/midtrans-notification", tags=["Payments"])
 async def handle_midtrans_notification(payload: MidtransWebhookPayload):
     # 1. Verifikasi signature key dari Midtrans untuk keamanan
     signature_payload = f"{payload.order_id}{payload.status_code}{payload.gross_amount}{MIDTRANS_SERVER_KEY}".encode()
