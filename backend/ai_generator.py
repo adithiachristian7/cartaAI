@@ -67,13 +67,13 @@ def create_invitation_html(data: dict) -> str:
         - This section must contain a single form with inputs for `nama` (name), `kehadiran` (attendance status: Hadir/Tidak Hadir), and `ucapan` (message).
         - Create one JavaScript function, for example `loadRsvpMessages()`.
         - **`loadRsvpMessages()` function:**
-            - It must perform a `fetch` GET request to `/invitations/[SLUG]/rsvp`.
+            - It must perform a `fetch` GET request to `/api/invitations/[SLUG]/rsvp`.
             - The response will be a JSON object like `{ "messages": [...] }`. You **must** access the array using `data.messages`.
             - On success, it must clear the guestbook display container (e.g., `<div id="guestbook-list">`).
             - Then, it must loop through the `data.messages` array. For each message, create a new HTML element and display the `nama`, `kehadiran`, and `ucapan`. Append this element to the container.
         - **On Page Load:** When the page's DOM is fully loaded, call `loadRsvpMessages()` to display the initial data.
         - **On Form Submission:**
-            - After a successful `POST` to `/invitations/[SLUG]/rsvp` with the form data, you **must** call `loadRsvpMessages()` again to refresh the list with the new message.
+            - After a successful `POST` to `/api/invitations/[SLUG]/rsvp` with the form data, you **must** call `loadRsvpMessages()` again to refresh the list with the new message.
         - Display an error message like "Gagal memuat pesan..." inside the container if the `fetch` call fails.
     """
 
