@@ -81,12 +81,12 @@ function Navbar() {
             </Link>
           )}
           {session ? (
-            <button
-              onClick={handleLogout}
+            <Link
+              to="/profile"
               className="btn-primary rounded-lg px-4 py-2 text-sm font-bold"
             >
-              Logout
-            </button>
+              Profil
+            </Link>
           ) : (
             <>
               <Link
@@ -169,15 +169,13 @@ function Navbar() {
               {/* Auth buttons for Mobile */}
               <div className="flex flex-col gap-2 mt-4 border-t pt-4">
                 {session ? (
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="btn-primary rounded-lg px-4 py-2 text-sm font-bold text-left w-full"
+                  <Link
+                    to="/profile"
+                    className="btn-primary rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    Logout
-                  </button>
+                    Profil
+                  </Link>
                 ) : (
                   <>
                     <Link

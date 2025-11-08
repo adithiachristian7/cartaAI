@@ -16,7 +16,6 @@ import Chat from './pages/Chat';
 import PremiumGenerator from './pages/PremiumGenerator';
 import Payment from './pages/Payment';
 import TemplateUsage from './pages/TemplateUsage';
-import InvitationViewer from './pages/InvitationViewer';
 
 import { AuthProvider } from './context/AuthContext';
 
@@ -24,6 +23,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import UpdatePassword from './pages/UpdatePassword';
 
 import PaymentStatus from './pages/PaymentStatus';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -46,7 +46,8 @@ function App() {
               <Route path="/premium-generator" element={<PremiumGenerator />} />
               <Route path="/payment" element={<Payment />} />
               <Route path="/payment-status" element={<PaymentStatus />} />
-              <Route path="/invitations/:slug" element={<InvitationViewer />} />
+
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </main>
           <Footer />
