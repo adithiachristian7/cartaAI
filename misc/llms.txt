@@ -1,0 +1,23 @@
+User-agent: GPTBot
+Disallow: /private/
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Disallow: /private/
+
+User-agent: ChatGPT-User
+Disallow: /private/
+
+User-agent: anthropic-ai
+Disallow: /private/
+
+User-agent: PerplexityBot
+Disallow: /private/
+
+User-agent: YouBot
+Disallow: /private/
+
+User-agent: FacebookBot
+Disallow: /private/

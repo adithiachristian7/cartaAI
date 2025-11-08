@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cartaai.my.id/sitemap.xml
