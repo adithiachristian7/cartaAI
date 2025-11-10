@@ -146,7 +146,7 @@ function Profile() {
             <div className="text-center bg-white dark:bg-gray-800 rounded-lg p-12 shadow-md">
               <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">upcoming</span>
               <p className="text-gray-600 dark:text-gray-300 mt-4 text-lg">Anda belum pernah membuat undangan.</p>
-              <Link to="/template" className="mt-6 inline-block btn-primary rounded-lg px-8 py-3 font-bold shadow-lg hover:shadow-xl transition-shadow">Buat Undangan Sekarang</Link>
+              <Link to="/template" className="mt-6 inline-block bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-8 py-3 font-bold shadow-lg hover:shadow-xl transition-shadow">Buat Undangan Sekarang</Link>
             </div>
           )}
 

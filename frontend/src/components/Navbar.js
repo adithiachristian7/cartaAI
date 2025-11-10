@@ -96,7 +96,7 @@ function Navbar() {
           {session ? (
             <Link
               to="/profile"
-              className="btn-primary rounded-lg px-4 py-2 text-sm font-bold"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-4 py-2 text-sm font-bold"
             >
               Profil
             </Link>
@@ -104,13 +104,13 @@ function Navbar() {
             <>
               <Link
                 to="/login"
-                className="btn-primary rounded-lg px-4 py-2 text-sm font-bold shadow-none hover:shadow-none text-white"
+                className="bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-4 py-2 text-sm font-bold shadow-none hover:shadow-none text-white"
               >
                 Masuk
               </Link>
               <Link
                 to="/register"
-                className="btn-primary rounded-lg px-4 py-2 text-sm font-bold shadow-none hover:shadow-none"
+                className="bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-4 py-2 text-sm font-bold shadow-none hover:shadow-none"
               >
                 Daftar
               </Link>
@@ -206,7 +206,7 @@ function Navbar() {
                 {session ? (
                   <Link
                     to="/profile"
-                    className="btn-primary rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
+                    className="bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Profil
@@ -215,14 +215,14 @@ function Navbar() {
                   <>
                     <Link
                       to="/login"
-                      className="btn-primary rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
+                      className="bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Masuk
                     </Link>
                     <Link
                       to="/register"
-                      className="btn-primary rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
+                      className="bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-600 hover:to-gray-700 transition-colors duration-300 rounded-lg px-4 py-2 text-sm font-bold text-white text-center block"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Daftar
