@@ -49,7 +49,7 @@ function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+              className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg border border-gray-100 dark:bg-gray-900 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
             >
               {/* Top accent bar */}
               <div
@@ -61,17 +61,17 @@ function Testimonials() {
 
               <div className="relative z-10">
                 {/* Quote icon */}
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-md bg-gradient-to-br from-indigo-500 to-purple-500 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl dark bg-gray-800 flex items-center justify-center mb-4 shadow-md bg-gradient-to-br from-indigo-500 to-purple-500 group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-white text-xl">
                     format_quote
                   </span>
                 </div>
 
-                <p className="text-gray-600 leading-relaxed mb-6 italic">
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6 italic">
                   {testimonial.text}
                 </p>
 
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-4 pt-4 border-t dark border-gray-100">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                     <div
                       className="absolute inset-0 rounded-full"
@@ -80,7 +80,7 @@ function Testimonials() {
                         padding: "2px",
                       }}
                     >
-                      <div className="w-full h-full rounded-full overflow-hidden bg-white">
+                      <div className="w-full h-full dark:bg-gray-800 rounded-full overflow-hidden bg-white">
                         <img
                           alt={`Foto ${testimonial.name}`}
                           className="w-full h-full object-cover"
@@ -93,10 +93,10 @@ function Testimonials() {
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                    <h4 className="font-bold dark:text-white text-gray-900 group-hover:text-indigo-700 transition-colors">
                       {testimonial.name}
                     </h4>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
+                    <p className="text-sm dark:text-gray-400 text-gray-600">{testimonial.role}</p>
                   </div>
                 </div>
               </div>

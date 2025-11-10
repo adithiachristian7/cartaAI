@@ -51,7 +51,7 @@ function Features() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative overflow-hidden rounded-2xl bg-white p-7 shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+              className="group relative overflow-hidden rounded-2xl bg-white p-7 shadow-lg dark:bg-gray-900 border border-gray-100 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
             >
               {/* Top accent bar */}
               <div
@@ -62,15 +62,15 @@ function Features() {
               ></div>
 
               <div className="relative z-10 text-center">
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md bg-gradient-to-br from-indigo-500 to-purple-500 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 dark:bg-gray-800 shadow-md bg-gradient-to-br from-indigo-500 to-purple-500 group-hover:scale-110 transition-transform">
                   <span className="material-symbols-outlined text-white text-2xl">
                     {feature.icon}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-700 transition-colors">
+                <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-3 group-hover:text-indigo-700 transition-colors">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <p className="text-gray-600 dark text-gray-300 dark:bg-gray-900 leading-relaxed">{feature.description}</p>
               </div>
             </div>
           ))}
