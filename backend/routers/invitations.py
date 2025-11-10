@@ -65,7 +65,7 @@ class BulkDeleteRequest(BaseModel):
 async def get_user_invitations(current_user: dict = Depends(get_current_user)):
     try:
         user_id = current_user.id
-        response = supabase.table("invitations").select("*").eq("user_id", user_id).execute()
+        response = supabase.table("invitations").select("*").eq("user_id", user_id).order("created_at", ascending=False).execute()
         return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
