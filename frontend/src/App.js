@@ -18,6 +18,7 @@ import Payment from './pages/Payment';
 import TemplateUsage from './pages/TemplateUsage';
 
 import { AuthProvider } from './context/AuthContext';
+import { DarkModeProvider } from './context/DarkModeContext';
 
 import ForgotPassword from './pages/ForgotPassword';
 import UpdatePassword from './pages/UpdatePassword';
@@ -28,31 +29,33 @@ import Profile from './pages/Profile';
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/template" element={<Template />} />
-              <Route path="/template-usage/:id" element={<TemplateUsage />} />
-              <Route path="/harga" element={<Harga />} />
-              <Route path="/tentang" element={<Tentang />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/update-password" element={<UpdatePassword />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/premium-generator" element={<PremiumGenerator />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/payment-status" element={<PaymentStatus />} />
+      <DarkModeProvider>
+        <AuthProvider>
+          <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-white dark:bg-gray-900 transition-colors duration-300">
+            <Navbar />
+            <main className="flex-grow pt-16 md:pt-20">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/template" element={<Template />} />
+                <Route path="/template-usage/:id" element={<TemplateUsage />} />
+                <Route path="/harga" element={<Harga />} />
+                <Route path="/tentang" element={<Tentang />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="/premium-generator" element={<PremiumGenerator />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route path="/payment-status" element={<PaymentStatus />} />
 
-              <Route path="/profile" element={<Profile />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </AuthProvider>
+                <Route path="/profile" element={<Profile />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </AuthProvider>
+      </DarkModeProvider>
     </Router>
   );
 }

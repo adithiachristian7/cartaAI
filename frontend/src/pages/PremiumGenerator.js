@@ -243,27 +243,56 @@ function PremiumGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white overflow-x-hidden relative">
+      {/* Subtle noise texture */}
+      <div
+        className="fixed inset-0 opacity-5 dark:hidden pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+        }}
+      ></div>
+
+      <div className="py-16 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
+          <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold mb-4">
               <span className="material-symbols-outlined">workspace_premium</span>
               PREMIUM GENERATOR
             </div>
-            <h1 className="text-4xl font-bold text-primary mb-4">
-              Generator Undangan Pernikahan Premium
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Generator Undangan Pernikahan{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                Premium
+              </span>
             </h1>
-            <p className="text-lg text-secondary max-w-3xl mx-auto">
+            <div className="relative inline-block mb-6">
+              <div className="w-28 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mx-auto"></div>
+              <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white rounded-full border-4 border-indigo-500 shadow-md"></div>
+            </div>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Buat undangan pernikahan eksklusif dengan fitur premium. Lengkapi form di bawah ini dan biarkan AI membuat undangan yang tak terlupakan.
             </p>
           </div>
 
           {!showChat ? (
-            <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-soft-blue to-blue-600 px-6 py-4">
-                <h2 className="text-2xl font-bold text-blue-950">Detail Acara Pernikahan</h2>
-                <p className="text-blue-950">Lengkapi informasi di bawah ini untuk membuat undangan premium</p>
+            <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+              {/* Top accent bar */}
+              <div
+                className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+                style={{
+                  background: "linear-gradient(90deg, #667eea, #764ba2)",
+                }}
+              ></div>
+
+              <div
+                className="px-6 py-4"
+                style={{
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                }}
+              >
+                <h2 className="text-2xl font-bold text-white mb-1">Detail Acara Pernikahan</h2>
+                <p className="text-indigo-100">Lengkapi informasi di bawah ini untuk membuat undangan premium</p>
               </div>
 
               <form onSubmit={handleGenerate} className="p-8">
@@ -276,7 +305,7 @@ function PremiumGenerator() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nama Mempelai Pria <span className="text-red-500">*</span>
                       </label>
-                      <input type="text" name="namaMempelaiPria" value={formData.namaMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama mempelai pria" required />
+                      <input type="text" name="namaMempelaiPria" value={formData.namaMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="Masukkan nama mempelai pria" required />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -352,7 +381,7 @@ function PremiumGenerator() {
                         name="temaWarna"
                         value={formData.temaWarna}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                       >
                         <option value="">Pilih tema warna</option>
                         <option value="classic-gold">Classic Gold</option>
@@ -372,7 +401,7 @@ function PremiumGenerator() {
                         name="agama"
                         value={formData.agama}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                       >
                         <option value="">Pilih agama</option>
                         <option value="islam">Islam</option>
@@ -391,7 +420,7 @@ function PremiumGenerator() {
                         name="jenisUndangan"
                         value={formData.jenisUndangan}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                       >
                         <option value="">Pilih jenis undangan</option>
                         <option value="classic">Klasik Elegan</option>
@@ -405,7 +434,7 @@ function PremiumGenerator() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Musik Latar</label>
                       {!previews.musik ? (
-                        <input type="file" name="musik" onChange={handleFileChange} accept="audio/mp3" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
+                        <input type="file" name="musik" onChange={handleFileChange} accept="audio/mp3" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:text-white hover:file:opacity-90 transition" style={{ '--tw-file-bg': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
                       ) : (
                         <div className="mt-2 p-2 border rounded-lg flex items-center justify-between">
                           <span className="text-sm text-gray-600">{previews.musik}</span>
@@ -419,7 +448,7 @@ function PremiumGenerator() {
                         Foto Mempelai Pria
                       </label>
                       {!previews.fotoMempelaiPria ? (
-                        <input type="file" name="fotoMempelaiPria" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
+                        <input type="file" name="fotoMempelaiPria" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition" />
                       ) : (
                         <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiPria} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiPria')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
                       )}
@@ -429,7 +458,7 @@ function PremiumGenerator() {
                         Foto Mempelai Wanita
                       </label>
                       {!previews.fotoMempelaiWanita ? (
-                        <input type="file" name="fotoMempelaiWanita" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
+                        <input type="file" name="fotoMempelaiWanita" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition" />
                       ) : (
                         <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiWanita} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiWanita')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
                       )}
@@ -438,7 +467,7 @@ function PremiumGenerator() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Galeri Foto Pre-Wedding
                       </label>
-                      <input type="file" name="galeriFoto" onChange={handleFileChange} accept="image/*" multiple className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-soft-blue file:text-white hover:file:bg-blue-600" />
+                      <input type="file" name="galeriFoto" onChange={handleFileChange} accept="image/*" multiple className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition" />
                       {previews.galeriFoto.length > 0 && (
                         <div className="mt-2 grid grid-cols-3 gap-2">
                           {previews.galeriFoto.map((preview, index) => (
@@ -457,25 +486,48 @@ function PremiumGenerator() {
                         value={formData.catatanKhusus}
                         onChange={handleInputChange}
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                         placeholder="Tambahkan catatan khusus atau permintaan lainnya..."
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-gradient-to-r from-soft-blue to-blue-600 text-slate-800 px-8 py-4 rounded-lg font-bold text-lg shadow-lg hover:from-blue-600 hover:to-blue-700 hover:text-white transition-all duration-300 transform hover:scale-105 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
+                    style={{
+                      background: isLoading
+                        ? "linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)"
+                        : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      color: "white",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isLoading) {
+                        e.target.style.background =
+                          "linear-gradient(135deg, #764ba2 0%, #667eea 100%)";
+                        e.target.style.transform = "translateY(-2px)";
+                        e.target.style.boxShadow =
+                          "0 6px 16px rgba(102, 126, 234, 0.3)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isLoading) {
+                        e.target.style.background =
+                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                        e.target.style.transform = "translateY(0)";
+                        e.target.style.boxShadow = "none";
+                      }
+                    }}
                   >
                     <span className="material-symbols-outlined mr-2">auto_awesome</span>
                     {isLoading ? loadingMessage || 'Memproses...' : 'Generate Undangan Premium'}
                   </button>
                   <Link
                     to="/chat"
-                    className="bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-bold text-lg shadow-lg hover:bg-gray-300 transition-all duration-300 text-center flex items-center justify-center"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 text-center flex items-center justify-center"
                   >
                     <span className="material-symbols-outlined mr-2">chat</span>
                     Kembali ke Chat Biasa
@@ -485,11 +537,31 @@ function PremiumGenerator() {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="h-96 overflow-y-auto p-6 space-y-4">
+              <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+                {/* Top accent bar */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+                  style={{
+                    background: "linear-gradient(90deg, #667eea, #764ba2)",
+                  }}
+                ></div>
+
+                <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50/50 relative z-10">
                   {messages.map((message) => (
                     <div key={message.id} className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.type === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-800"}`}>
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${
+                          message.type === "user" ? "text-white" : "bg-white text-gray-800 border border-gray-100"
+                        }`}
+                        style={
+                          message.type === "user"
+                            ? {
+                                background:
+                                  "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                              }
+                            : {}
+                        }
+                      >
                         <p className="text-sm whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: message.content }} />
                       </div>
                     </div>

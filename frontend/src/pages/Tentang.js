@@ -1,30 +1,41 @@
-import React, { useState } from "react";
+// src/pages/Tentang.js
+import React, { useState, useEffect } from "react";
 
 function Tentang() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const teamMembers = [
-    { name: "Prince", role: "CEO & Founder", image: "/assets/prince.jpg" },
+    {
+      name: "Prince",
+      role: "Project Manager",
+      image: "/assets/prince.jpg",
+      bio: "Visioner di balik cartaAI.",
+    },
     {
       name: "Adriel",
       role: "Lead Developer & AI Specialist",
       image: "/assets/adriel.jpg",
+      bio: "Memimpin pengembangan solusi berbasis AI yang menyatukan kecerdasan mesin dengan pengalaman pengguna yang intuitif dan responsif.",
+      isLead: true,
     },
     {
       name: "Julio",
       role: "AI Specialist & Backend Developer",
       image: "/assets/julio.jpg",
+      bio: "Sebagai AI Specialist dan Backend Developer, saya berfokus merancang sistem cerdas yang scalable dan siap menghadirkan pengalaman real-time yang optimal.",
     },
     {
       name: "Adith",
       role: "UI/UX & Frontend Developer",
       image: "/assets/adith.jpg",
+      bio: "Menciptakan pengalaman digital yang intuitif dan estetis, di mana setiap interaksi terasa alami dan bermakna.",
     },
     {
-      name: "Sandro",
+      name: "Andro",
       role: "Marketing Manager",
       image: "/assets/sandro.jpg",
+      bio: "Menciptakan strategi pemasaran yang menggabungkan kreativitas dan analisis untuk hasil yang nyata dan berkelanjutan.",
     },
   ];
 
@@ -38,282 +49,374 @@ function Tentang() {
     setSelectedMember(null);
   };
 
+  // Close modal on ESC
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 overflow-x-hidden relative transition-colors duration-300">
+      {/* Subtle noise texture (light, non-distracting) */}
       <div
-        className="relative bg-cover bg-center h-64 md:h-[400px]"
-        style={{ backgroundImage: "url('/assets/bg_hero1.jpg')" }}
+        className="fixed inset-0 opacity-5 dark:hidden pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+        }}
+      ></div>
+
+      {/* Hero Section - Restyled with brand gradient */}
+      <div
+        className="relative bg-center bg-no-repeat flex items-end min-h-[200px] sm:min-h-[250px] md:min-h-[300px]"
+        style={{
+          backgroundImage: "url('/assets/bg_hero1.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundAttachment: "scroll",
+        }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-        <div className="absolute bottom-6 left-0 right-0 px-6">
-          <div className="container mx-auto text-center text-white">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-2">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300"></span>
-            </h1>
-          </div>
+        {/* Overlay: dark gradient + noise */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+        <div className="relative z-10 w-full px-6 pb-12">
+          <div className="container mx-auto text-center text-white"></div>
         </div>
       </div>
 
-      {/* Opening Statement */}
+      {/* Opening Statement - Restyled */}
       <div className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto mb-8"></div>
-          <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-            <span className="font-semibold text-blue-600">cartaAI</span> hadir
-            untuk membantu pasangan calon pengantin menciptakan undangan
-            pernikahan yang personal, elegan, dan unik dengan bantuan teknologi
-            kecerdasan buatan. Kami percaya, setiap kisah cinta layak diabadikan
-            dalam undangan yang istimewa.
+          <div className="relative inline-block mb-8">
+            <div className="w-28 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 dark:from-gray-900 dark:to-gray-900 rounded-full mx-auto"></div>
+            <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-4 border-indigo-500 shadow-md"></div>
+          </div>
+          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
+            <span className="font-semibold text-indigo-700 dark:text-indigo-400">
+              cartaAI
+            </span>{" "}
+            hadir untuk membantu pasangan calon pengantin menciptakan undangan
+            pernikahan yang personal, elegan, dan unik — dengan kekuatan AI yang
+            dipadukan dengan sentuhan manusiawi. Kami percaya:{" "}
+            <span className="italic">
+              setiap kisah cinta layak diabadikan dalam undangan yang tak
+              terlupakan.
+            </span>
           </p>
         </div>
       </div>
 
-      {/* Vision & Mission */}
-      <div className="py-16 bg-gradient-to-br from-blue-50/60 to-purple-50/40 px-4 sm:px-6 lg:px-8">
+      {/* Vision & Mission - Restyled with brand gradient borders */}
+      <div className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 transition-all hover:shadow-md">
-              <div className="w-14 h-14 bg-blue-700 rounded-xl flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-white text-2xl">
-                  visibility
-                </span>
+            {[
+              {
+                title: "Visi Kami",
+                icon: "visibility",
+                gradient:
+                  "from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400",
+                desc: "Menjadi solusi terdepan untuk undangan pernikahan digital yang menggabungkan keindahan desain, personalisasi mendalam, dan kecanggihan AI — tanpa kompromi pada makna.",
+              },
+              {
+                title: "Misi Kami",
+                icon: "flag",
+                gradient: "from-purple-600 to-indigo-600",
+                desc: "Memberikan pengalaman pembuatan undangan dalam 3 menit, desain eksklusif (bukan template), dan pilihan digital/cetak premium yang ramah lingkungan.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="relative rounded-2xl p-1 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+                style={{
+                  background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+                }}
+              >
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 h-full shadow-xl">
+                  <div
+                    className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-md ${
+                      i === 0 ? "bg-indigo-600" : "bg-purple-600"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-white text-2xl">
+                      {item.icon}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    {item.title}
+                    <span
+                      className="w-8 h-0.5 rounded-full"
+                      style={{
+                        background: `linear-gradient(90deg, #667eea, #764ba2)`,
+                      }}
+                    ></span>
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Visi Kami
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Menjadi solusi modern untuk undangan pernikahan yang memadukan
-                keindahan desain, personalisasi, dan efisiensi teknologi AI.
-              </p>
-            </div>
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 transition-all hover:shadow-md">
-              <div className="w-14 h-14 bg-blue-700 rounded-xl flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-white text-2xl">
-                  flag
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Misi Kami
-              </h3>
-              <ul className="text-gray-600 space-y-3">
-                <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-500 mt-0.5 text-lg">
-                    check
-                  </span>
-                  <span>
-                    Memberikan pengalaman mudah dan cepat dalam membuat undangan
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-500 mt-0.5 text-lg">
-                    check
-                  </span>
-                  <span>
-                    Menyediakan desain yang elegan dan dapat dipersonalisasi
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-blue-500 mt-0.5 text-lg">
-                    check
-                  </span>
-                  <span>
-                    Menghadirkan undangan digital maupun cetak yang ramah
-                    lingkungan
-                  </span>
-                </li>
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Why Choose cartaAI */}
-      <div className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Mengapa Memilih{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-600">
+      {/* Why Choose Us - Restyled with brand aksen */}
+      <div className="py-16 bg-gradient-to-br from-indigo-50/20 to-purple-50/10 dark:from-gray-900 dark:to-gray-900 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Mengapa{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               cartaAI
             </span>
-            ?
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Kami menghadirkan solusi modern untuk undangan pernikahan impian
-            Anda
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Kami bukan hanya alat — kami mitra dalam merayakan kisah cinta Anda.
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {[
             {
               icon: "bolt",
-              title: "Cepat & Hemat Biaya",
-              desc: "Hanya dengan beberapa klik, undangan siap dibagikan tanpa biaya cetak berlebihan.",
+              title: "⚡ Cepat & Hemat",
+              desc: "Dari ide ke undangan siap kirim hanya dalam hitungan menit — tanpa biaya cetak berlebihan.",
             },
             {
               icon: "brush",
-              title: "Desain Unik",
-              desc: "Didukung AI untuk menghasilkan desain kreatif sesuai tema pernikahan Anda.",
+              title: "🎨 Desain Unik",
+              desc: "AI kami belajar dari ribuan desain premium untuk menghasilkan karya yang benar-benar orisinal.",
             },
             {
               icon: "account_circle",
-              title: "Personalisasi Maksimal",
-              desc: "Setiap undangan bisa disesuaikan dengan cerita cinta dan gaya Anda.",
+              title: "❤️ Personalisasi",
+              desc: "Setiap detail — dari font hingga ilustrasi — mencerminkan kepribadian dan kisah Anda.",
             },
           ].map((item, i) => (
             <div
               key={i}
-              className="bg-white p-7 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 text-center"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-7 shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
             >
-              <div className="w-14 h-14 bg-blue-700 rounded-xl flex items-center justify-center mx-auto mb-5">
-                <span className="material-symbols-outlined text-white text-2xl">
-                  {item.icon}
-                </span>
+              {/* Top accent bar */}
+              <div
+                className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+                style={{
+                  background: "linear-gradient(90deg, #667eea, #764ba2)",
+                }}
+              ></div>
+
+              <div className="relative z-10">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md bg-gradient-to-br from-indigo-500 to-purple-500 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-2xl">
+                    {item.icon}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-indigo-700 dark:text-indigo-400 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">{item.desc}</p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-gray-600">{item.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* How cartaAI Works */}
-      <div className="py-16 bg-gradient-to-br from-pink-50/50 to-purple-50/30 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Bagaimana{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-700">
+      {/* How It Works - Restyled with step badge gradient */}
+      <div className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900  dark:text-white mb-4">
+            Cara Kerja{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               cartaAI
-            </span>{" "}
-            Bekerja?
+            </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Proses mudah dan cepat untuk membuat undangan impian Anda
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Sederhana, cepat, dan penuh kejutan indah.
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {[
-            {
-              step: 1,
-              title: "Pilih Tema",
-              desc: "Klasik, modern, rustic, atau custom sesuai selera.",
-            },
-            {
-              step: 2,
-              title: "Masukkan Detail",
-              desc: "Nama pasangan, tanggal, lokasi, dan pesan spesial.",
-            },
-            {
-              step: 3,
-              title: "AI Generate",
-              desc: "AI merancang undangan berdasarkan preferensi Anda.",
-            },
-            {
-              step: 4,
-              title: "Bagikan",
-              desc: "Undangan digital siap dikirim atau dicetak.",
-            },
+            { step: 1, icon: "palette", title: "Pilih Tema" },
+            { step: 2, icon: "text_fields", title: "Masukkan Detail" },
+            { step: 3, icon: "auto_awesome", title: "AI Generate" },
+            { step: 4, icon: "share", title: "Bagikan" },
           ].map((item, i) => (
-            <div key={i} className="text-center group">
-              <div className="w-16 h-16 bg-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
-                {item.step}
+            <div
+              key={i}
+              className="text-center group relative transition-all duration-300 hover:scale-105 cursor-pointer"
+            >
+              <div className="relative z-10">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 text-white font-bold text-xl shadow-lg group-hover:scale-110 transition-transform"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  }}
+                >
+                  <span className="material-symbols-outlined text-xl font-normal">
+                    {item.icon}
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-700 dark:text-indigo-400 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm max-w-[200px] mx-auto">
+                  {item.title === "Pilih Tema"
+                    ? "Klasik, modern, rustic, atau custom sesuai selera."
+                    : item.title === "Masukkan Detail"
+                    ? "Nama pasangan, tanggal, lokasi, dan pesan spesial."
+                    : item.title === "AI Generate"
+                    ? "AI merancang undangan berdasarkan preferensi Anda."
+                    : "Undangan digital siap dikirim atau dicetak."}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-gray-600 text-sm">{item.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Team Section */}
-      <div className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Tim{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-700">
+      {/* Team Section - Restyled with conic border & highlight */}
+      <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-indigo-50/10 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-6xl mx-auto text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Tim di Balik{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               cartaAI
-            </span>{" "}
+            </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Tim ahli yang berdedikasi untuk mewujudkan undangan pernikahan
-            impian Anda
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Kami bukan hanya tim — kami keluarga yang percaya pada kekuatan
+            cinta & teknologi.
           </p>
         </div>
-        <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
           {teamMembers.map((member, index) => (
             <div
               key={index}
-              className="group text-center transform transition-transform hover:scale-105"
+              className="text-center group transform transition-all duration-300 hover:scale-110 cursor-pointer"
             >
               <div
-                className="overflow-hidden rounded-2xl w-32 h-32 mx-auto mb-4 shadow-md border-2 border-white cursor-pointer"
+                className="relative w-36 h-36 mx-auto mb-4 cursor-pointer rounded-2xl overflow-visible"
                 onClick={() => openModal(member)}
               >
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
+                <div
+                  className="absolute inset-0 rounded-2xl"
                   style={{
-                    objectPosition: member.objectPosition,
-                    transform:
-                      member.name === "Adriel" ? "scale(1.1)" : "scale(1)",
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    padding: "3px",
                   }}
-                  onError={(e) => {
-                    e.target.src = "/assets/team/default-avatar.png";
-                  }}
-                />
+                >
+                  <div className="w-full h-full rounded-xl overflow-hidden bg-white dark:bg-gray-800 relative">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                      style={{ display: "block" }}
+                      onError={(e) => {
+                        e.target.src = "/assets/team/default-avatar.png";
+                        console.error(`Failed to load image: ${member.image}`);
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-gray-900">{member.name}</h3>
-              <p className="text-gray-600 text-sm mt-1">{member.role}</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-700 dark:text-indigo-400 transition-colors">
+                {member.name}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
+                {member.role}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Enhanced Modal - with brand gradient header */}
       {isModalOpen && selectedMember && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={closeModal}
         >
           <div
-            className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 relative"
+            className="relative bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl transform transition-all duration-300"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Gradient header bar */}
+            <div
+              className="absolute top-0 left-0 right-0 h-2 rounded-t-3xl"
+              style={{
+                background: "linear-gradient(90deg, #667eea, #764ba2)",
+              }}
+            ></div>
+
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:text-gray-300 text-2xl font-light transition-colors"
               onClick={closeModal}
+              aria-label="Close"
             >
-              &times;
+              <span className="material-symbols-outlined">close</span>
             </button>
-            <div className="text-center">
-              <img
-                src={selectedMember.image}
-                alt={selectedMember.name}
-                className="w-64 h-64 object-cover rounded-2xl mx-auto mb-4"
-                style={{
-                  objectPosition: selectedMember.objectPosition,
-                  transform:
-                    selectedMember.name === "Adriel"
-                      ? "scale(1.1)"
-                      : "scale(1)",
-                }}
-                onError={(e) => {
-                  e.target.src = "/assets/team/default-avatar.png";
-                }}
-              />
-              <h3 className="text-2xl font-bold text-gray-900">
+
+            <div className="text-center mt-2">
+              <div className="relative inline-block mb-6">
+                <div
+                  className="w-48 h-48 rounded-2xl mx-auto relative"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    padding: "3px",
+                  }}
+                >
+                  <div className="w-full h-full rounded-xl overflow-hidden bg-white dark:bg-gray-800 relative">
+                    <img
+                      src={selectedMember.image}
+                      alt={selectedMember.name}
+                      className="w-full h-full object-cover rounded-xl"
+                      style={{ display: "block" }}
+                      onError={(e) => {
+                        e.target.src = "/assets/team/default-avatar.png";
+                        console.error(
+                          `Failed to load image: ${selectedMember.image}`
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                 {selectedMember.name}
               </h3>
-              <p className="text-gray-600">{selectedMember.role}</p>
+              <p className="text-indigo-600 font-medium mb-4">
+                {selectedMember.role}
+              </p>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed px-2">
+                {selectedMember.bio}
+              </p>
             </div>
           </div>
         </div>
       )}
+
+      {/* Custom Button Classes (inline for portability) */}
+      <style jsx>{`
+        .btn-primary {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          transition: all 0.3s ease;
+          transform: translateY(0);
+          border: none;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .btn-primary:hover {
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+        }
+      `}</style>
     </div>
   );
 }

@@ -38,11 +38,29 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-x-hidden relative flex items-center justify-center px-4 py-12 transition-colors duration-300">
+      {/* Subtle noise texture */}
+      <div
+        className="fixed inset-0 opacity-5 dark:hidden pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+        }}
+      ></div>
+
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900">Masuk ke CartaAI</h1>
-          <p className="text-gray-500 mt-2">Silakan masuk untuk melanjutkan</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Masuk ke{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              CartaAI
+            </span>
+          </h1>
+          <div className="relative inline-block mb-6">
+            <div className="w-28 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mx-auto"></div>
+            <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-4 border-indigo-500 shadow-md"></div>
+          </div>
+          <p className="text-gray-600 dark:text-gray-300">Silakan masuk untuk melanjutkan</p>
         </div>
 
         {error && (
@@ -51,19 +69,26 @@ function Login() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
+          {/* Top accent bar */}
+          <div
+            className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+            style={{
+              background: "linear-gradient(90deg, #667eea, #764ba2)",
+            }}
+          ></div>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-white mb-2"
               >
                 Email
               </label>
               <input
                 id="email"
                 type="email"
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -74,13 +99,13 @@ function Login() {
               <div className="flex items-center justify-between mb-2">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 dark:text-white"
                 >
                   Kata Sandi
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm font-medium text-blue-600 hover:text-blue-500 transition"
+                  className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition"
                 >
                   Lupa Password?
                 </Link>
@@ -89,7 +114,7 @@ function Login() {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -147,7 +172,29 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-3 rounded-xl transition duration-200 shadow-sm hover:shadow-md disabled:opacity-70"
+              className="w-full py-3 rounded-xl font-semibold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: loading
+                  ? "linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)"
+                  : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.target.style.background =
+                    "linear-gradient(135deg, #764ba2 0%, #667eea 100%)";
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow =
+                    "0 6px 16px rgba(102, 126, 234, 0.3)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.target.style.background =
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "none";
+                }
+              }}
             >
               {loading ? "Masuk..." : "Masuk"}
             </button>
@@ -159,7 +206,7 @@ function Login() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500 font-medium">
+              <span className="px-3 bg-white dark:bg-gray-800 text-gray-500 dark:text-white font-medium">
                 Atau
               </span>
             </div>
@@ -169,7 +216,7 @@ function Login() {
           <button
             onClick={handleGoogleLogin}
             type="button"
-            className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 transition shadow-sm"
+            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 hover:border-indigo-300 transition shadow-sm"
           >
             <img
               src="https://www.google.com/favicon.ico"
@@ -180,11 +227,11 @@ function Login() {
           </button>
         </div>
 
-        <p className="text-center text-gray-600 mt-8">
+        <p className="text-center text-gray-600 dark:text-gray-300 mt-8">
           Belum punya akun?{" "}
           <Link
             to="/register"
-            className="font-medium text-blue-600 hover:text-blue-500 transition"
+            className="font-medium text-indigo-600 hover:text-indigo-500 transition"
           >
             Daftar
           </Link>
