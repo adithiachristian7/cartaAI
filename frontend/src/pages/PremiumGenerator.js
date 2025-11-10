@@ -196,7 +196,7 @@ function PremiumGenerator() {
         const errorData = await response.json().catch(() => null);
         throw new Error(`Error dari Backend: ${errorData?.detail || response.statusText}`);
       }
-      const finalUrl = `${backendUrl}/invitations/${savedInvitation.slug}`;
+      const finalUrl = `${backendUrl}/api/invitations/${savedInvitation.slug}`;
       if (!finalUrl) {
         throw new Error("Backend tidak mengembalikan URL undangan.");
       }

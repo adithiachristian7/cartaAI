@@ -165,7 +165,7 @@ function Profile() {
                       <h3 className="text-xl font-bold text-gray-800 dark:text-white mt-2 truncate" title={title}>{title}</h3>
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-700 p-4 border-t dark:border-gray-600 mt-auto flex items-center gap-2">
-                      <a href={`/invitations/${inv.slug}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition duration-300 text-sm">
+                      <a href={`/api/invitations/${inv.slug}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition duration-300 text-sm">
                         Lihat Undangan
                       </a>
                       <button onClick={() => handleDelete(inv.slug)} className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition duration-300 dark:bg-red-800 dark:hover:bg-red-700 dark:text-red-300" title="Hapus Undangan">
