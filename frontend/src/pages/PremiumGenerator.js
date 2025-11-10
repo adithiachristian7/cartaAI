@@ -218,22 +218,22 @@ function PremiumGenerator() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-lg text-gray-600">Memuat data pengguna...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-lg text-gray-600 dark:text-gray-300">Memuat data pengguna...</p>
       </div>
     );
   }
 
   if (userProfile?.subscription_status !== 'premium') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-8 bg-white rounded-lg shadow-xl max-w-md mx-auto">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md mx-auto">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2 rounded-full text-sm font-bold mb-4">
             <span className="material-symbols-outlined">error</span>
             Akses Ditolak
           </div>
-          <h1 className="text-3xl font-bold text-primary mb-4">Fitur Khusus Pengguna Premium</h1>
-          <p className="text-md text-secondary mb-6">Maaf, halaman ini hanya dapat diakses oleh pengguna dengan status langganan premium. Silakan upgrade akun Anda untuk menikmati semua fitur eksklusif kami.</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Fitur Khusus Pengguna Premium</h1>
+          <p className="text-md text-gray-600 dark:text-gray-300 mb-6">Maaf, halaman ini hanya dapat diakses oleh pengguna dengan status langganan premium. Silakan upgrade akun Anda untuk menikmati semua fitur eksklusif kami.</p>
           <Link to="/harga" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-3 rounded-lg font-bold text-lg shadow-lg hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 inline-block">
             Lihat Paket Harga
           </Link>
@@ -243,7 +243,7 @@ function PremiumGenerator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white overflow-x-hidden relative">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-x-hidden relative">
       {/* Subtle noise texture */}
       <div
         className="fixed inset-0 opacity-5 dark:hidden pointer-events-none"
@@ -260,23 +260,23 @@ function PremiumGenerator() {
               <span className="material-symbols-outlined">workspace_premium</span>
               PREMIUM GENERATOR
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Generator Undangan Pernikahan{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
                 Premium
               </span>
             </h1>
             <div className="relative inline-block mb-6">
               <div className="w-28 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mx-auto"></div>
-              <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white rounded-full border-4 border-indigo-500 shadow-md"></div>
+              <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-4 border-indigo-500 shadow-md"></div>
             </div>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Buat undangan pernikahan eksklusif dengan fitur premium. Lengkapi form di bawah ini dan biarkan AI membuat undangan yang tak terlupakan.
             </p>
           </div>
 
           {!showChat ? (
-            <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+            <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
               {/* Top accent bar */}
               <div
                 className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
@@ -299,89 +299,89 @@ function PremiumGenerator() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Kolom Informasi Wajib */}
                   <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-primary border-b pb-2">Informasi Wajib</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-600 pb-2">Informasi Wajib</h3>
                     {/* Input nama, tanggal, lokasi, dll. seperti sebelumnya */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nama Mempelai Pria <span className="text-red-500">*</span>
                       </label>
-                      <input type="text" name="namaMempelaiPria" value={formData.namaMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="Masukkan nama mempelai pria" required />
+                      <input type="text" name="namaMempelaiPria" value={formData.namaMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="Masukkan nama mempelai pria" required />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nama Ayah Mempelai Pria
                       </label>
-                      <input type="text" name="namaAyahMempelaiPria" value={formData.namaAyahMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ayah mempelai pria" />
+                      <input type="text" name="namaAyahMempelaiPria" value={formData.namaAyahMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan nama ayah mempelai pria" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nama Ibu Mempelai Pria
                       </label>
-                      <input type="text" name="namaIbuMempelaiPria" value={formData.namaIbuMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ibu mempelai pria" />
+                      <input type="text" name="namaIbuMempelaiPria" value={formData.namaIbuMempelaiPria} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan nama ibu mempelai pria" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nama Mempelai Wanita <span className="text-red-500">*</span>
                       </label>
-                      <input type="text" name="namaMempelaiWanita" value={formData.namaMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama mempelai wanita" required />
+                      <input type="text" name="namaMempelaiWanita" value={formData.namaMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan nama mempelai wanita" required />
                     </div>
                      <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nama Ayah Mempelai Wanita
                       </label>
-                      <input type="text" name="namaAyahMempelaiWanita" value={formData.namaAyahMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ayah mempelai wanita" />
+                      <input type="text" name="namaAyahMempelaiWanita" value={formData.namaAyahMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan nama ayah mempelai wanita" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Nama Ibu Mempelai Wanita
                       </label>
-                      <input type="text" name="namaIbuMempelaiWanita" value={formData.namaIbuMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan nama ibu mempelai wanita" />
+                      <input type="text" name="namaIbuMempelaiWanita" value={formData.namaIbuMempelaiWanita} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan nama ibu mempelai wanita" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Tanggal Acara <span className="text-red-500">*</span>
                       </label>
-                      <input type="date" name="tanggalAcara" value={formData.tanggalAcara} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" required />
+                      <input type="date" name="tanggalAcara" value={formData.tanggalAcara} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" required />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Waktu Acara
                       </label>
-                      <input type="time" name="waktuAcara" value={formData.waktuAcara} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+                      <input type="time" name="waktuAcara" value={formData.waktuAcara} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Lokasi Acara <span className="text-red-500">*</span>
                       </label>
-                      <textarea name="lokasiAcara" value={formData.lokasiAcara} onChange={handleInputChange} rows={3} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan alamat lengkap lokasi acara" required />
+                      <textarea name="lokasiAcara" value={formData.lokasiAcara} onChange={handleInputChange} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan alamat lengkap lokasi acara" required />
                     </div>
                      <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Waktu Resepsi
                       </label>
-                      <input type="time" name="waktuResepsi" value={formData.waktuResepsi} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+                      <input type="time" name="waktuResepsi" value={formData.waktuResepsi} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Tempat Resepsi
                       </label>
-                      <textarea name="tempatResepsi" value={formData.tempatResepsi} onChange={handleInputChange} rows={3} className="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Masukkan alamat lengkap lokasi resepsi" />
+                      <textarea name="tempatResepsi" value={formData.tempatResepsi} onChange={handleInputChange} rows={3} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg" placeholder="Masukkan alamat lengkap lokasi resepsi" />
                     </div>
                   </div>
 
                   {/* Kolom Informasi Tambahan & Aset */}
                   <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-primary border-b pb-2">Informasi Tambahan & Aset</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-600 pb-2">Informasi Tambahan & Aset</h3>
                     {/* Input tema, jenis, dll. seperti sebelumnya */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Tema Warna
                       </label>
                       <select
                         name="temaWarna"
                         value={formData.temaWarna}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                       >
                         <option value="">Pilih tema warna</option>
                         <option value="classic-gold">Classic Gold</option>
@@ -394,14 +394,14 @@ function PremiumGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Agama
                       </label>
                       <select
                         name="agama"
                         value={formData.agama}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                       >
                         <option value="">Pilih agama</option>
                         <option value="islam">Islam</option>
@@ -413,14 +413,14 @@ function PremiumGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Jenis Undangan
                       </label>
                       <select
                         name="jenisUndangan"
                         value={formData.jenisUndangan}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                       >
                         <option value="">Pilih jenis undangan</option>
                         <option value="classic">Klasik Elegan</option>
@@ -432,39 +432,39 @@ function PremiumGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Musik Latar</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Musik Latar</label>
                       {!previews.musik ? (
                         <input type="file" name="musik" onChange={handleFileChange} accept="audio/mp3" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:text-white hover:file:opacity-90 transition" style={{ '--tw-file-bg': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
                       ) : (
-                        <div className="mt-2 p-2 border rounded-lg flex items-center justify-between">
-                          <span className="text-sm text-gray-600">{previews.musik}</span>
+                        <div className="mt-2 p-2 border dark:border-gray-600 rounded-lg flex items-center justify-between">
+                          <span className="text-sm text-gray-600 dark:text-gray-300">{previews.musik}</span>
                           <button type="button" onClick={() => handleFileDelete('musik')} className="text-sm text-red-600 hover:underline">Hapus</button>
                         </div>
                       )}
                     </div>
                     {/* ... input file lainnya ... */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Foto Mempelai Pria
                       </label>
                       {!previews.fotoMempelaiPria ? (
                         <input type="file" name="fotoMempelaiPria" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition" />
                       ) : (
-                        <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiPria} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiPria')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
+                        <div className="mt-2 p-2 border dark:border-gray-600 rounded-lg"><img src={previews.fotoMempelaiPria} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiPria')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
                       )}
                     </div>
                      <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Foto Mempelai Wanita
                       </label>
                       {!previews.fotoMempelaiWanita ? (
                         <input type="file" name="fotoMempelaiWanita" onChange={handleFileChange} accept="image/*" className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition" />
                       ) : (
-                        <div className="mt-2 p-2 border rounded-lg"><img src={previews.fotoMempelaiWanita} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiWanita')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
+                        <div className="mt-2 p-2 border dark:border-gray-600 rounded-lg"><img src={previews.fotoMempelaiWanita} alt="Preview" className="w-24 h-24 object-cover rounded-md" /><button type="button" onClick={() => handleFileDelete('fotoMempelaiWanita')} className="text-sm text-red-600 hover:underline mt-2">Hapus</button></div>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Galeri Foto Pre-Wedding
                       </label>
                       <input type="file" name="galeriFoto" onChange={handleFileChange} accept="image/*" multiple className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition" />
@@ -478,7 +478,7 @@ function PremiumGenerator() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Catatan Khusus
                       </label>
                       <textarea
@@ -486,7 +486,7 @@ function PremiumGenerator() {
                         value={formData.catatanKhusus}
                         onChange={handleInputChange}
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                         placeholder="Tambahkan catatan khusus atau permintaan lainnya..."
                       />
                     </div>
@@ -527,7 +527,7 @@ function PremiumGenerator() {
                   </button>
                   <Link
                     to="/chat"
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 text-center flex items-center justify-center"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 text-center flex items-center justify-center"
                   >
                     <span className="material-symbols-outlined mr-2">chat</span>
                     Kembali ke Chat Biasa
@@ -537,7 +537,7 @@ function PremiumGenerator() {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+              <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
                 {/* Top accent bar */}
                 <div
                   className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
@@ -546,12 +546,12 @@ function PremiumGenerator() {
                   }}
                 ></div>
 
-                <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50/50 relative z-10">
+                <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/50 relative z-10">
                   {messages.map((message) => (
                     <div key={message.id} className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                       <div
                         className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${
-                          message.type === "user" ? "text-white" : "bg-white text-gray-800 border border-gray-100"
+                          message.type === "user" ? "text-white" : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-600"
                         }`}
                         style={
                           message.type === "user"
@@ -568,15 +568,15 @@ function PremiumGenerator() {
                   ))}
                   {isLoading && (
                     <div className="flex justify-start">
-                      <div className="bg-gray-100 px-4 py-2 rounded-lg">
-                        <span className="text-sm text-gray-500">{loadingMessage || "Memproses..."}</span>
+                      <div className="bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg">
+                        <span className="text-sm text-gray-500 dark:text-gray-300">{loadingMessage || "Memproses..."}</span>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
               <div className="flex flex-wrap gap-4 justify-center">
-                <button onClick={() => setShowChat(false)} className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-bold">
+                <button onClick={() => setShowChat(false)} className="bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 px-6 py-3 rounded-lg font-bold">
                   Edit Form
                 </button>
               </div>

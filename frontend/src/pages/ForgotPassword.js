@@ -27,7 +27,7 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white overflow-x-hidden relative flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-x-hidden relative flex items-center justify-center px-4 py-12 transition-colors duration-300">
       {/* Subtle noise texture */}
       <div
         className="fixed inset-0 opacity-5 dark:hidden pointer-events-none"
@@ -39,17 +39,17 @@ function ForgotPassword() {
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Lupa{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               Password
             </span>
           </h1>
           <div className="relative inline-block mb-6">
             <div className="w-28 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mx-auto"></div>
-            <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white rounded-full border-4 border-indigo-500 shadow-md"></div>
+            <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-4 border-indigo-500 shadow-md"></div>
           </div>
-          <p className="text-gray-600">Masukkan email Anda, dan kami akan mengirimkan link untuk me-reset password Anda.</p>
+          <p className="text-gray-600 dark:text-gray-300">Masukkan email Anda, dan kami akan mengirimkan link untuk me-reset password Anda.</p>
         </div>
 
         {message && (
@@ -63,7 +63,7 @@ function ForgotPassword() {
           </div>
         )}
 
-        <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg p-8 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
           {/* Top accent bar */}
           <div
             className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
@@ -75,10 +75,10 @@ function ForgotPassword() {
           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
             <div>
               <label className="block mb-2">
-                <span className="text-sm font-medium text-gray-700">Email</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-white">Email</span>
                 <input
                   type="email"
-                  className="mt-1 block w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                  className="mt-1 block w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -117,9 +117,9 @@ function ForgotPassword() {
           </form>
         </div>
 
-        <p className="text-center text-gray-600 mt-8">
+        <p className="text-center text-gray-600 dark:text-gray-300 mt-8">
           Ingat password Anda?{" "}
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition">
+          <Link to="/login" className="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition">
             Masuk
           </Link>
         </p>

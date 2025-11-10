@@ -22,7 +22,11 @@ function Login() {
       if (error) throw error;
       navigate("/");
     } catch (error) {
-      setError(error.message);
+      if (error.message === "Invalid login credentials") {
+        setError("Email atau password salah!");
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }

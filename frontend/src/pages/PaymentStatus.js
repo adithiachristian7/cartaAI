@@ -26,7 +26,7 @@ function PaymentStatus() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white overflow-x-hidden relative flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-x-hidden relative flex items-center justify-center px-4 py-12">
       {/* Subtle noise texture */}
       <div
         className="fixed inset-0 opacity-5 dark:hidden pointer-events-none"
@@ -37,7 +37,7 @@ function PaymentStatus() {
       ></div>
 
       <div className="w-full max-w-2xl relative z-10 text-center">
-        <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg p-10 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg p-10 border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
           {/* Top accent bar */}
           <div
             className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
@@ -58,8 +58,8 @@ function PaymentStatus() {
                 {isSuccess ? 'check_circle' : 'warning'}
               </span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h1>
-            <p className="text-gray-600 text-lg mb-8 leading-relaxed">{message}</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{title}</h1>
+            <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 leading-relaxed">{message}</p>
             <Link 
               to="/"
               className="inline-block rounded-xl px-8 py-3 text-base font-semibold text-white transition-all duration-300"

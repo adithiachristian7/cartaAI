@@ -193,8 +193,16 @@ function Navbar() {
               </Link>
 
               {/* Auth buttons for Mobile */}
-              {/* Auth buttons for Mobile */}
               <div className="flex flex-col gap-2 mt-4 border-t pt-4">
+                {userProfile?.subscription_status === "premium" && (
+                  <Link
+                    to="/premium-generator"
+                    className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-105 text-center block"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Premium Generator
+                  </Link>
+                )}
                 {session ? (
                   <Link
                     to="/profile"
