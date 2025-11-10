@@ -86,7 +86,8 @@ function Profile() {
         const response = await fetch('/api/invitations/', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
         if (!response.ok) throw new Error('Gagal mengambil data undangan.');
         const data = await response.json();
-        setInvitations(data);
+        const sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setInvitations(sortedData);
       } catch (err) {
         setError(err.message);
       } finally {
