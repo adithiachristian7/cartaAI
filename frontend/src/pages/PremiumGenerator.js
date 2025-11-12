@@ -61,6 +61,7 @@ const saveInvitationData = async (invitationData) => {
 };
 
 function PremiumGenerator() {
+  const { session } = useAuth();
   const { userProfile, loading } = useAuth();
   const [formData, setFormData] = useState({
     namaMempelaiPria: "",
@@ -526,7 +527,7 @@ function PremiumGenerator() {
                     {isLoading ? loadingMessage || 'Memproses...' : 'Generate Undangan Premium'}
                   </button>
                   <Link
-                    to="/chat"
+                    to={session ? "/chat" : "/login"}
                     className="bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 text-center flex items-center justify-center"
                   >
                     <span className="material-symbols-outlined mr-2">chat</span>

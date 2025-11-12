@@ -1,15 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Pricing.css';
 
 function Pricing() {
+  const { session } = useAuth();
   const pricingPlans = [
     {
       name: 'Basic',
       price: 'Gratis',
       description: 'Untuk memulai',
       buttonText: 'Mulai Gratis',
-      buttonLink: '#',
+      buttonLink: '/chat',
       icon: 'card_giftcard',
       features: [
         'Desain terbatas',
@@ -23,7 +25,7 @@ function Pricing() {
       period: '/bulan',
       description: 'Untuk acara spesial',
       buttonText: 'Pilih Paket Premium',
-      buttonLink: '#',
+      buttonLink: '/login',
       isPopular: true,
       icon: 'star',
       features: [
@@ -89,16 +91,40 @@ function Pricing() {
                 <p className="mt-2 text-secondary">{plan.description}</p>
               </div>
 
-              <Link
-                to={plan.buttonLink}
-                className={`w-full rounded-2xl py-4 px-6 text-center font-bold transition-all duration-300 btn-pricing ${
-                  plan.isPopular
-                    ? 'bg-gradient-to-r from-soft-blue to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105'
-                    : 'bg-white border-2 border-soft-blue text-soft-blue hover:bg-soft-blue hover:text-white'
-                }`}
-              >
-                {plan.buttonText}
-              </Link>
+              {plan.name === 'Premium' ? (
+                <Link
+                  to={session ? '/premium-generator' : '/login'}
+                  className={`w-full rounded-2xl py-4 px-6 text-center font-bold transition-all duration-300 btn-pricing ${
+                    plan.isPopular
+                      ? 'bg-gradient-to-r from-soft-blue to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                      : 'bg-white border-2 border-soft-blue text-soft-blue hover:bg-soft-blue hover:text-white'
+                  }`}
+                >
+                  {plan.buttonText}
+                </Link>
+              ) : session ? (
+                <Link
+                  to={plan.buttonLink}
+                  className={`w-full rounded-2xl py-4 px-6 text-center font-bold transition-all duration-300 btn-pricing ${
+                    plan.isPopular
+                      ? 'bg-gradient-to-r from-soft-blue to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                      : 'bg-white border-2 border-soft-blue text-soft-blue hover:bg-soft-blue hover:text-white'
+                  }`}
+                >
+                  {plan.buttonText}
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className={`w-full rounded-2xl py-4 px-6 text-center font-bold transition-all duration-300 btn-pricing ${
+                    plan.isPopular
+                      ? 'bg-gradient-to-r from-soft-blue to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                      : 'bg-white border-2 border-soft-blue text-soft-blue hover:bg-soft-blue hover:text-white'
+                  }`}
+                >
+                  {plan.buttonText}
+                </Link>
+              )}
 
               <ul className="mt-8 space-y-4 text-secondary">
                 {plan.features.map((feature, featureIndex) => (

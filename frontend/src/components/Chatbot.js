@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Chatbot() {
+  const { session } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -237,7 +239,7 @@ function Chatbot() {
                 <p className="text-xs text-gray-400 mt-2 text-center">
                   Atau{" "}
                   <Link
-                    to="/chat"
+                    to={session ? "/chat" : "/login"}
                     className="text-indigo-600 hover:text-indigo-700 font-medium"
                   >
                     buka halaman chat lengkap

@@ -1,14 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Pricing() {
+  const { session } = useAuth();
   const pricingPlans = [
     {
       name: "Basic",
       price: "Gratis",
       description: "Untuk memulai",
       buttonText: "Mulai Gratis",
-      buttonLink: "#",
+      buttonLink: "/chat",
       features: ["Desain terbatas", "Fitur dasar", "Hingga 100 undangan"],
     },
     {
@@ -17,7 +19,7 @@ function Pricing() {
       period: "/bulan",
       description: "Untuk acara spesial",
       buttonText: "Pilih Paket Premium",
-      buttonLink: "#",
+      buttonLink: "/premium-generator",
       isPopular: true,
       features: [
         "Semua desain premium",
@@ -54,14 +56,34 @@ function Pricing() {
         )}
       </p>
       <p className="mt-1 text-secondary">{plan.description}</p>
-      <Link
-        to={plan.buttonLink}
-        className={`mt-8 w-full rounded-lg py-3 text-center font-bold ${
-          plan.isPopular ? "btn-primary" : "btn-secondary"
-        }`}
-      >
-        {plan.buttonText}
-      </Link>
+      {plan.name === "Premium" ? (
+        <Link
+          to={session ? plan.buttonLink : "/login"}
+          className={`mt-8 w-full rounded-lg py-3 text-center font-bold ${
+            plan.isPopular ? "btn-primary" : "btn-secondary"
+          }`}
+        >
+          {plan.buttonText}
+        </Link>
+      ) : session ? (
+        <Link
+          to={plan.buttonLink}
+          className={`mt-8 w-full rounded-lg py-3 text-center font-bold ${
+            plan.isPopular ? "btn-primary" : "btn-secondary"
+          }`}
+        >
+          {plan.buttonText}
+        </Link>
+      ) : (
+        <Link
+          to="/login"
+          className={`mt-8 w-full rounded-lg py-3 text-center font-bold ${
+            plan.isPopular ? "btn-primary" : "btn-secondary"
+          }`}
+        >
+          {plan.buttonText}
+        </Link>
+      )}
       <ul className="mt-8 space-y-3 text-secondary">
         {plan.features.map((feature, featureIndex) => (
           <li key={featureIndex} className="flex items-center gap-3">

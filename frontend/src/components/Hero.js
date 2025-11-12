@@ -56,25 +56,47 @@ function Hero() {
                   Buat Undangan Sekarang
                 </Link>
               ) : (
-                <Link
-                  to="/chat"
-                  className="px-8 py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-300"
-                  style={{
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = "linear-gradient(135deg, #764ba2 0%, #667eea 100%)";
-                    e.target.style.transform = "translateY(-2px)";
-                    e.target.style.boxShadow = "0 6px 16px rgba(102, 126, 234, 0.3)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
-                    e.target.style.transform = "translateY(0)";
-                    e.target.style.boxShadow = "none";
-                  }}
-                >
-                  Coba Gratis
-                </Link>
+                session ? (
+                  <Link
+                    to="/chat"
+                    className="px-8 py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-300"
+                    style={{
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = "linear-gradient(135deg, #764ba2 0%, #667eea 100%)";
+                      e.target.style.transform = "translateY(-2px)";
+                      e.target.style.boxShadow = "0 6px 16px rgba(102, 126, 234, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                      e.target.style.transform = "translateY(0)";
+                      e.target.style.boxShadow = "none";
+                    }}
+                  >
+                    Coba Gratis
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="px-8 py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-300"
+                    style={{
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = "linear-gradient(135deg, #764ba2 0%, #667eea 100%)";
+                      e.target.style.transform = "translateY(-2px)";
+                      e.target.style.boxShadow = "0 6px 16px rgba(102, 126, 234, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                      e.target.style.transform = "translateY(0)";
+                      e.target.style.boxShadow = "none";
+                    }}
+                  >
+                    Coba Gratis
+                  </Link>
+                )
               )}
               <a
                 href="/template"

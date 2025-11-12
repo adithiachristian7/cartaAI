@@ -23,9 +23,23 @@ function Register() {
     setLoading(true);
     setError(null);
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error, data } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
+      });
       if (error) throw error;
-      setRegistrationSuccess(true);
+      
+      // If registration is successful and the user is logged in directly
+      // (e.g., no email confirmation required), redirect to homepage
+      if (data.session) {
+        navigate("/");
+      } else {
+        // If email confirmation is required, show success message
+        setRegistrationSuccess(true);
+      }
     } catch (error) {
       setError(error.message);
     } finally {
@@ -36,6 +50,9 @@ function Register() {
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: window.location.origin
+      }
     });
     if (error) {
       setError("Gagal login dengan Google: " + error.message);

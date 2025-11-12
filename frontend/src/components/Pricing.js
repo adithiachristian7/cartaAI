@@ -209,9 +209,20 @@ function Pricing() {
                             {loading ? "Memproses..." : plan.buttonText}
                           </button>
                         )
-                      ) : (
+                      ) : session ? (
                         <Link
                           to={plan.buttonLink}
+                          className="mt-8 w-full rounded-lg py-3 text-center font-bold text-white block transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          }}
+                        >
+                          {plan.buttonText}
+                        </Link>
+                      ) : (
+                        <Link
+                          to="/login"
                           className="mt-8 w-full rounded-lg py-3 text-center font-bold text-white block transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
                           style={{
                             background:
