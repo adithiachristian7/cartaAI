@@ -14,7 +14,7 @@ const weddingTemplates = {
       title: "Elegan Minimalis",
       description:
         "Tampilan lembut dengan dominasi putih dan dekorasi sederhana.",
-      imageUrl: "/assets/elegan_2.jpg",
+      imageUrl: "/assets/elegan_2-removebg-preview.png",
     },
     {
       id: 7,
@@ -60,7 +60,7 @@ const weddingTemplates = {
       id: 12,
       title: "Simple Garis & Bunga",
       description: "Desain hitam-putih dengan ilustrasi garis dan motif bunga.",
-      imageUrl: "/assets/simple_3.jpg",
+      imageUrl: "/assets/simple_3-removebg-preview.png",
     },
   ],
 };
@@ -106,14 +106,16 @@ const Template = () => {
               <div className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border-4 border-indigo-500 dark:border-indigo-400 shadow-md"></div>
             </div>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Pilih template undangan pernikahan dengan berbagai gaya yang sesuai
-              dengan selera Anda.
+              Pilih template undangan pernikahan dengan berbagai gaya yang
+              sesuai dengan selera Anda.
             </p>
           </div>
 
           {Object.entries(weddingTemplates).map(([style, templates]) => (
             <section key={style} className="mb-16">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 capitalize">{style}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 capitalize">
+                {style}
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                 {templates.map((template) => (
                   <div
@@ -140,7 +142,9 @@ const Template = () => {
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-700 dark:text-indigo-400 transition-colors">
                         {template.title}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{template.description}</p>
+                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                        {template.description}
+                      </p>
                     </div>
                   </div>
                 ))}
