@@ -20,9 +20,9 @@ function Navbar() {
       <nav className="container mx-auto flex items-center justify-between px-6 py-4 lg:px-10">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src="/assets/logo_cartaAI.png"
+            src="/assets/logo_cartaAI.jpg"
             alt="Logo Brand"
-            className="w-10 h-10"
+            className="w-12 h-12 rounded-lg object-cover"
           />
           <h2 className="text-primary dark:text-white text-2xl font-bold tracking-tight">
             cartaAI
