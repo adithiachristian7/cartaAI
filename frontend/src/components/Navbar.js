@@ -22,7 +22,7 @@ function Navbar() {
           <img
             src="/assets/logo_cartaAI.jpg"
             alt="Logo Brand"
-            className="w-12 h-12 rounded-lg object-cover"
+            className="w-12 h-12 rounded-full object-cover"
           />
           <h2 className="text-primary dark:text-white text-2xl font-bold tracking-tight">
             cartaAI
