@@ -134,12 +134,44 @@ async def bulk_delete_invitations(request: BulkDeleteRequest, current_user: dict
 @router.get("/{slug}", response_class=HTMLResponse)
 async def get_invitation(slug: str):
     try:
-        bucket_name = "generated-invitations"
-        file_name = f"{slug}.html"
-        response = supabase.storage.from_(bucket_name).download(file_name)
-        return HTMLResponse(content=response.decode('utf-8'))
-    except Exception:
-        raise HTTPException(status_code=404, detail=f"Invitation with slug '{slug}' not found.")
+        # 1. Coba ambil file yang sudah jadi dari storage
+        try:
+            bucket_name = "generated-invitations"
+            file_name = f"{slug}.html"
+            storage_response = supabase.storage.from_(bucket_name).download(file_name)
+            if storage_response:
+                return HTMLResponse(content=storage_response.decode('utf-8'))
+        except Exception:
+            # Jika file tidak ada di storage, jangan langsung error, lanjut ke cara render otomatis
+            pass
+
+        # 2. Ambil data dari database untuk buat ulang tampilannya
+        response = supabase.table("invitations").select("*").eq("slug", slug).execute()
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Undangan tidak ditemukan di database.")
+        
+        inv_data = response.data[0]
+        
+        # Ambil data form yang tersimpan di kolom 'generated_content'
+        form_data = inv_data.get("generated_content")
+        
+        if not form_data:
+            # Jika data form tidak ada di generated_content, coba rekonstruksi dari kolom lain
+            form_data = {
+                "namaMempelaiPria": inv_data.get("namaMempelaiPria", "Mempelai Pria"),
+                "namaMempelaiWanita": inv_data.get("namaMempelaiWanita", "Mempelai Wanita"),
+                "tanggalAcara": inv_data.get("tanggalAcara", ""),
+                "lokasiAcara": inv_data.get("lokasiAcara", ""),
+                "slug": slug
+            }
+        
+        # Render HTML secara langsung
+        html_content = create_invitation_html(form_data)
+        return HTMLResponse(content=html_content)
+
+    except Exception as e:
+        print(f"Error loading invitation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Gagal memuat undangan: {str(e)}")
 
 @router.delete("/{slug}", status_code=status.HTTP_200_OK)
 async def delete_invitation(slug: str, current_user: dict = Depends(get_current_user)):

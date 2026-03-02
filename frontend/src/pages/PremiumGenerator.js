@@ -227,10 +227,8 @@ function PremiumGenerator() {
       setLoadingMessage("Menghubungi AI untuk membuat file undangan...");
       const backendUrl =
         process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
-      const endpoint =
-        user.subscription_status === "free"
-          ? `${backendUrl}/invitations/free-generate`
-          : `${backendUrl}/invitations/generate`;
+      // Gunakan /api/invitations/generate karena router di backend menggunakan prefix /api
+      const endpoint = `${backendUrl}/api/invitations/generate`;
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -242,7 +240,7 @@ function PremiumGenerator() {
           `Error dari Backend: ${errorData?.detail || response.statusText}`
         );
       }
-      const finalUrl = `${backendUrl}/invitations/${savedInvitation.slug}`;
+      const finalUrl = `${backendUrl}/api/invitations/${savedInvitation.slug}`;
       if (!finalUrl) {
         throw new Error("Backend tidak mengembalikan URL undangan.");
       }
