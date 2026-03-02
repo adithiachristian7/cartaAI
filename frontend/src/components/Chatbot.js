@@ -29,6 +29,7 @@ function Chatbot() {
 
     const userMessage = {
       id: messages.length + 1,
+      role: "user",
       type: "user",
       content: inputMessage,
     };
@@ -37,27 +38,57 @@ function Chatbot() {
     setInputMessage("");
     setIsLoading(true);
 
-    // Simulasi response bot
-    setTimeout(() => {
-      const botResponses = [
-        "Saya mengerti! Untuk membuat undangan pernikahan, Anda bisa mulai dengan memilih tema yang sesuai. Apakah Anda lebih suka tema klasik, modern, atau minimalis?",
-        "Bagus! Saya bisa membantu Anda membuat undangan yang personal dan elegan. Coba klik tombol 'Coba Gratis' di atas untuk mulai membuat undangan Anda.",
-        "Untuk informasi lebih lanjut tentang paket dan harga, silakan kunjungi halaman Harga. Kami menawarkan paket Basic (Gratis) dan Premium dengan fitur lengkap.",
-        "Anda juga bisa melihat contoh template undangan yang tersedia di halaman Template. Pilih template yang paling sesuai dengan selera Anda!",
-      ];
+    try {
+      // Prepare history for API (excluding the current user message being sent)
+      const chatHistory = messages.map(msg => ({
+        role: msg.type === "bot" ? "bot" : "user",
+        content: msg.content
+      }));
 
-      const randomResponse =
-        botResponses[Math.floor(Math.random() * botResponses.length)];
+      // In production, configure the API URL dynamically. For development, default to localhost:8000
+      // In typical Create React App, proxy might be used, but we use the explicit base URL if needed.
+      const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
-      const botMessage = {
+      const response = await fetch(`${API_BASE_URL}/api/chatbot/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          history: chatHistory
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const rawContent = data.reply || "Maaf, saya tidak mengerti.";
+        // Menghapus karakter asterik (*) yang sering jadi format Bold di Markdown
+        const cleanContent = rawContent.replace(/\*{1,2}/g, "");
+
+        const botMessage = {
+          id: messages.length + 2,
+          type: "bot",
+          role: "bot",
+          content: cleanContent,
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      } else {
+        throw new Error(data.detail || "Gagal mendapatkan respons bot");
+      }
+    } catch (error) {
+      console.error("Chatbot Error:", error);
+      const errorMessage = {
         id: messages.length + 2,
         type: "bot",
-        content: randomResponse,
+        role: "bot",
+        content: "Oops! Terjadi kesalahan koneksi. Silakan coba lagi nanti.",
       };
-
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -151,22 +182,20 @@ function Chatbot() {
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${
-                      message.type === "user" ? "justify-end" : "justify-start"
-                    }`}
+                    className={`flex ${message.type === "user" ? "justify-end" : "justify-start"
+                      }`}
                   >
                     <div
-                      className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${
-                        message.type === "user"
-                          ? "text-white"
-                          : "bg-white text-gray-800 border border-gray-100"
-                      }`}
+                      className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${message.type === "user"
+                        ? "text-white"
+                        : "bg-white text-gray-800 border border-gray-100"
+                        }`}
                       style={
                         message.type === "user"
                           ? {
-                              background:
-                                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                            }
+                            background:
+                              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          }
                           : {}
                       }
                     >

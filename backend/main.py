@@ -2,7 +2,7 @@
 # It initializes the FastAPI app and includes the modular routers.
 
 from fastapi import FastAPI
-from routers import auth, payments, invitations
+from routers import auth, payments, invitations, chatbot
 
 print("--- SERVER BERJALAN DENGAN KODE VERSI BARU ---")
 
@@ -35,6 +35,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api")
 app.include_router(payments.router, prefix="/api")
 app.include_router(invitations.router, prefix="/api")
+app.include_router(chatbot.router, prefix="/api")
 
 @app.get("/", tags=["Root"])
 def read_root():

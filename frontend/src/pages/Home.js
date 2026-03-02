@@ -14,7 +14,6 @@ function Home() {
       <Features />
       <Pricing />
       <Testimonials />
-      <Chatbot />
     </>
   );
 }

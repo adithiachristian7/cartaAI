@@ -25,6 +25,7 @@ import UpdatePassword from './pages/UpdatePassword';
 
 import PaymentStatus from './pages/PaymentStatus';
 import Profile from './pages/Profile';
+import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
               </Routes>
             </main>
             <Footer />
+            <Chatbot />
           </div>
         </AuthProvider>
       </DarkModeProvider>

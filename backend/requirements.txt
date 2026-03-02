@@ -6,3 +6,4 @@ requests
 midtransclient
 google-generativeai
 python-multipart
+midtransclient
