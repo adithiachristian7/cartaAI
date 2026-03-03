@@ -315,7 +315,7 @@ function Tentang() {
                       className="w-full h-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
                       style={{ display: "block" }}
                       onError={(e) => {
-                        e.target.src = "/assets/team/default-avatar.png";
+                        e.target.src = "/assets/logo_cartaAI.jpg";
                         console.error(`Failed to load image: ${member.image}`);
                       }}
                     />
@@ -376,7 +376,7 @@ function Tentang() {
                       className="w-full h-full object-cover rounded-xl"
                       style={{ display: "block" }}
                       onError={(e) => {
-                        e.target.src = "/assets/team/default-avatar.png";
+                        e.target.src = "/assets/logo_cartaAI.jpg";
                         console.error(
                           `Failed to load image: ${selectedMember.image}`
                         );

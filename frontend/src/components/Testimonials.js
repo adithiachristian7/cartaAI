@@ -6,7 +6,7 @@ function Testimonials() {
       text: '"CartaAI membuat undangan pernikahan kami jadi lebih berkesan! Prosesnya cepat, hasilnya cantik."',
       name: 'Maya & Rio',
       role: 'Pasangan Pernikahan',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZHKDfUSumamkw3F4_LFPRYcDPvRH1bdBWPRNIWutuW_D0xNcijtrjSJ0_IzpmB66KrNvfbA4Z9-CU48TxpX6PkaSxiy4UitBwF55QSjHjPy0dB2WOcxDBoPphlDM9iMxYF4cbJZ5Eog6K7AQ87WeiCLWtl5BpxvPzy2cMpfpi6zK9nDJlCOkkcOTs3xPzEcSxiy4UitBwF55QSjHjPy0dB2WOcxDBoPphlDM9iMxYF4cbJZ5Eog6K7AQ87WeiCLWtl5BpxvPzy2cMpfpi6zK9nDJlCOkkcOTs3xPzEcXa7fXtOMKtfYwSBqi4oMPsvKg1M3fqgmmOWZgSUi00FcreJ-b85x1oFoHALgaFip5ParYBI9PsTA'
+      image: '/assets/simple_3.jpg'
     },
     {
       text: '“Kami sangat puas dengan layanan CartaAI. Desain undangannya elegan dan sesuai dengan tema pernikahan kami!”',
@@ -77,7 +77,7 @@ function Testimonials() {
                           className="w-full h-full object-cover"
                           src={testimonial.image}
                           onError={(e) => {
-                            e.target.src = "/assets/team/default-avatar.png";
+                            e.target.src = "/assets/logo_cartaAI.jpg";
                           }}
                         />
                       </div>
