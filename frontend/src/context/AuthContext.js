@@ -8,34 +8,39 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Function to fetch user profile using .then()
-    const fetchUserProfile = (user) => {
-      if (!user) {
-        setUserProfile(null);
-        return;
-      }
-      supabase
-        .from('users')
-        .select('subscription_status')
-        .eq('id', user.id)
-        .single()
-        .then(({ data, error }) => {
-          if (error && error.code !== 'PGRST116') {
-            console.error("Error fetching user profile:", error);
-            setUserProfile({ subscription_status: 'free' });
-          } else if (data) {
-            setUserProfile(data);
-          } else {
-            setUserProfile({ subscription_status: 'free' });
-          }
-        })
-        .catch(e => {
-            console.error("Exception fetching user profile:", e);
-            setUserProfile({ subscription_status: 'free' });
-        });
-    };
+  const fetchUserProfile = (user) => {
+    if (!user) {
+      setUserProfile(null);
+      return;
+    }
+    supabase
+      .from('users')
+      .select('subscription_status')
+      .eq('id', user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error fetching user profile:", error);
+          setUserProfile({ subscription_status: 'free' });
+        } else if (data) {
+          setUserProfile(data);
+        } else {
+          setUserProfile({ subscription_status: 'free' });
+        }
+      })
+      .catch(e => {
+        console.error("Exception fetching user profile:", e);
+        setUserProfile({ subscription_status: 'free' });
+      });
+  };
 
+  const refreshProfile = () => {
+    if (session?.user) {
+      fetchUserProfile(session.user);
+    }
+  };
+
+  useEffect(() => {
     // Initial load
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -58,6 +63,7 @@ export function AuthProvider({ children }) {
     session,
     user: session?.user,
     userProfile,
+    refreshProfile,
     loading,
     logout: () => supabase.auth.signOut(),
   };

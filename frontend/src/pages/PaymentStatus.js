@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function PaymentStatus() {
   const [searchParams] = useSearchParams();
+  const { refreshProfile } = useAuth();
   const transactionStatus = searchParams.get('transaction_status');
   const orderId = searchParams.get('order_id');
+
+  useEffect(() => {
+    if (transactionStatus === 'settlement' || transactionStatus === 'capture') {
+      // Tunggu 2 detik agar backend selesai memproses webhook, lalu refresh profile
+      const timer = setTimeout(() => {
+        refreshProfile();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [transactionStatus, refreshProfile]);
 
   let title = 'Status Pembayaran';
   let message = 'Mengecek status pembayaran Anda...';

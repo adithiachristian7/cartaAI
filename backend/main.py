@@ -1,8 +1,10 @@
 # This is the main application file.
 # It initializes the FastAPI app and includes the modular routers.
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from typing import Optional
 from routers import auth, payments, invitations, chatbot
+from routers.payments import process_midtrans_logic, MidtransWebhookPayload
 
 print("--- SERVER BERJALAN DENGAN KODE VERSI BARU ---")
 
@@ -40,3 +42,40 @@ app.include_router(chatbot.router, prefix="/api")
 @app.get("/", tags=["Root"])
 def read_root():
     return {"message": "Welcome to the CartaAI Backend!"}
+
+@app.post("/", tags=["Root"])
+async def handle_root_post(request: Request):
+    # This is a fallback for misconfigured webhooks that hit the root instead of /api/payments/midtrans-notification
+    try:
+        body = await request.json()
+        print(f"DEBUG: Received POST at root: {body}")
+
+        # Coba proses sebagai notifikasi Midtrans jika field yang dibutuhkan ada
+        if "order_id" in body and "transaction_status" in body:
+            payload = MidtransWebhookPayload(**body)
+            result = await process_midtrans_logic(payload)
+            print(f"DEBUG: Root POST processing result: {result}")
+            return result
+
+        return {"message": "POST received at root. Please configure your webhook URL to /api/payments/midtrans-notification"}
+    except Exception as e:
+        print(f"DEBUG: Received POST at root (non-JSON or error): {e}")
+        return {"message": f"POST received at root. Error: {str(e)}"}
+
+@app.post("/midtrans-notification", tags=["Root"])
+async def handle_misconfigured_path(request: Request):
+    # Menangani kasus di mana Midtrans memukul /midtrans-notification bukannya /api/payments/midtrans-notification
+    try:
+        body = await request.json()
+        print(f"DEBUG: Received POST at /midtrans-notification: {body}")
+
+        if "order_id" in body and "transaction_status" in body:
+            payload = MidtransWebhookPayload(**body)
+            result = await process_midtrans_logic(payload)
+            print(f"DEBUG: /midtrans-notification processing result: {result}")
+            return result
+
+        return {"message": "POST received at wrong path. Handled successfully."}
+    except Exception as e:
+        print(f"DEBUG: Error at /midtrans-notification: {e}")
+        return {"message": f"Error: {str(e)}"}
