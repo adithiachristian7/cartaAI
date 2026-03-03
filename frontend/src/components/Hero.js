@@ -58,7 +58,7 @@ function Hero() {
               ) : (
                 session ? (
                   <Link
-                    to="/chat"
+                    to="/free-generator"
                     className="px-8 py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-300"
                     style={{
                       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",

@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Chat from './pages/Chat';
 import PremiumGenerator from './pages/PremiumGenerator';
+import FreeGenerator from './pages/FreeGenerator';
 import Payment from './pages/Payment';
 import TemplateUsage from './pages/TemplateUsage';
 
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/update-password" element={<UpdatePassword />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/premium-generator" element={<PremiumGenerator />} />
+                <Route path="/free-generator" element={<FreeGenerator />} />
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/payment-status" element={<PaymentStatus />} />
 

@@ -8,6 +8,7 @@ from supabase import create_client, Client
 
 # Import the AI generator function
 from ai_generator import create_invitation_html
+from ai_generator_free import create_invitation_html_free
 from dependencies import get_current_user
 
 # --- Supabase Client Initialization ---
@@ -102,6 +103,38 @@ async def generate_and_upload_invitation(request: InvitationRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate invitation: {str(e)}")
 
+@router.post("/generate-free", status_code=status.HTTP_200_OK)
+async def generate_and_upload_invitation_free(request: InvitationRequest):
+    try:
+        form_data = request.dict()
+        html_content = create_invitation_html_free(form_data)
+        bucket_name = "generated-invitations"
+        file_name = f"{request.slug}.html"
+        
+        try:
+            supabase.storage.from_(bucket_name).remove([file_name])
+        except Exception:
+            pass # Ignore if file doesn't exist
+
+        supabase.storage.from_(bucket_name).upload(
+            path=file_name, 
+            file=html_content.encode('utf-8'), 
+            file_options={"content-type": "text/html", "upsert": "true"}
+        )
+        
+        public_url = supabase.storage.from_(bucket_name).get_public_url(file_name)
+        
+        update_response = supabase.table('invitations').update({
+            'generated_html_url': public_url
+        }).eq('slug', request.slug).execute()
+
+        if not update_response.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{request.slug}' not found.")
+
+        return {"message": "Free invitation generated successfully!", "invitation_public_url": public_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate free invitation: {str(e)}")
+
 @router.delete("/", status_code=status.HTTP_200_OK)
 async def bulk_delete_invitations(request: BulkDeleteRequest, current_user: dict = Depends(get_current_user)):
     try:
@@ -166,7 +199,13 @@ async def get_invitation(slug: str):
             }
         
         # Render HTML secara langsung
-        html_content = create_invitation_html(form_data)
+        # Check if this is a free or premium generation by checking premium fields existence.
+        # Alternatively, we could save the tier in the database, but this is a quick fallback.
+        if "fotoMempelaiPria" in form_data and form_data["fotoMempelaiPria"]:
+            html_content = create_invitation_html(form_data)
+        else:
+            html_content = create_invitation_html_free(form_data)
+
         return HTMLResponse(content=html_content)
 
     except Exception as e:

@@ -31,41 +31,37 @@ function Navbar() {
 
         <div className="hidden items-center gap-8 md:flex">
           <Link
-            className={`${
-              location.pathname === "/"
+            className={`${location.pathname === "/"
                 ? "text-blue-600 dark:text-indigo-400"
                 : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-            } text-sm font-medium transition-colors`}
+              } text-sm font-medium transition-colors`}
             to="/"
           >
             Beranda
           </Link>
           <Link
-            className={`${
-              location.pathname === "/tentang"
+            className={`${location.pathname === "/tentang"
                 ? "text-blue-600 dark:text-indigo-400"
                 : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-            } text-sm font-medium transition-colors`}
+              } text-sm font-medium transition-colors`}
             to="/tentang"
           >
             Tentang Kami
           </Link>
           <Link
-            className={`${
-              location.pathname === "/template"
+            className={`${location.pathname === "/template"
                 ? "text-blue-600 dark:text-indigo-400"
                 : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-            } text-sm font-medium transition-colors`}
+              } text-sm font-medium transition-colors`}
             to="/template"
           >
             Template
           </Link>
           <Link
-            className={`${
-              location.pathname === "/harga"
+            className={`${location.pathname === "/harga"
                 ? "text-blue-600 dark:text-indigo-400"
                 : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-            } text-sm font-medium transition-colors`}
+              } text-sm font-medium transition-colors`}
             to="/harga"
           >
             Harga
@@ -84,15 +80,22 @@ function Navbar() {
               {darkMode ? "light_mode" : "dark_mode"}
             </span>
           </button>
-          
-          {userProfile?.subscription_status === "premium" && (
+
+          {userProfile?.subscription_status === "premium" ? (
             <Link
               to="/premium-generator"
               className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-105"
             >
               Premium Generator
             </Link>
-          )}
+          ) : session ? (
+            <Link
+              to="/free-generator"
+              className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-105"
+            >
+              Free Generator
+            </Link>
+          ) : null}
           {session ? (
             <Link
               to="/profile"
@@ -129,7 +132,7 @@ function Navbar() {
               {darkMode ? "light_mode" : "dark_mode"}
             </span>
           </button>
-          
+
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -148,44 +151,40 @@ function Navbar() {
             <div className="flex flex-col gap-4">
               {/* Navigation Links */}
               <Link
-                className={`${
-                  location.pathname === "/"
+                className={`${location.pathname === "/"
                     ? "text-blue-800 dark:text-indigo-400"
                     : "text-gray-900 dark:text-gray-100 hover:text-blue-700 dark:hover:text-indigo-400"
-                } text-sm font-medium transition-colors`}
+                  } text-sm font-medium transition-colors`}
                 to="/"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Beranda
               </Link>
               <Link
-                className={`${
-                  location.pathname === "/tentang"
+                className={`${location.pathname === "/tentang"
                     ? "text-blue-600 dark:text-indigo-400"
                     : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-                } text-sm font-medium transition-colors`}
+                  } text-sm font-medium transition-colors`}
                 to="/tentang"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Tentang
               </Link>
               <Link
-                className={`${
-                  location.pathname === "/template"
+                className={`${location.pathname === "/template"
                     ? "text-blue-600 dark:text-indigo-400"
                     : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-                } text-sm font-medium transition-colors`}
+                  } text-sm font-medium transition-colors`}
                 to="/template"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Template
               </Link>
               <Link
-                className={`${
-                  location.pathname === "/harga"
+                className={`${location.pathname === "/harga"
                     ? "text-blue-600 dark:text-indigo-400"
                     : "text-secondary dark:text-gray-300 hover:text-blue-600 dark:hover:text-indigo-400"
-                } text-sm font-medium transition-colors`}
+                  } text-sm font-medium transition-colors`}
                 to="/harga"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -194,7 +193,7 @@ function Navbar() {
 
               {/* Auth buttons for Mobile */}
               <div className="flex flex-col gap-2 mt-4 border-t pt-4">
-                {userProfile?.subscription_status === "premium" && (
+                {userProfile?.subscription_status === "premium" ? (
                   <Link
                     to="/premium-generator"
                     className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-105 text-center block"
@@ -202,7 +201,15 @@ function Navbar() {
                   >
                     Premium Generator
                   </Link>
-                )}
+                ) : session ? (
+                  <Link
+                    to="/free-generator"
+                    className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-105 text-center block"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Free Generator
+                  </Link>
+                ) : null}
                 {session ? (
                   <Link
                     to="/profile"
