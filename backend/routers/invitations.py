@@ -3,6 +3,10 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from typing import Optional, List
 import os
+import hashlib
+import uuid
+import traceback
+from datetime import datetime
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -14,15 +18,12 @@ from dependencies import get_current_user
 # --- Supabase Client Initialization ---
 load_dotenv()
 url: str = os.environ.get("SUPABASE_URL")
-# PENTING: Gunakan Service Role Key untuk bypass RLS saat update dari backend
 key: str = os.environ.get("SUPABASE_SERVICE_KEY")
 
 if not url or not key:
     raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in .env file")
 
 supabase: Client = create_client(url, key)
-# --- End of Initialization ---
-
 
 router = APIRouter(
     prefix="/invitations",
@@ -65,10 +66,11 @@ class BulkDeleteRequest(BaseModel):
 @router.get("/")
 async def get_user_invitations(current_user: dict = Depends(get_current_user)):
     try:
-        user_id = current_user.id
+        user_id = getattr(current_user, 'id', None) or current_user.get('id')
         response = supabase.table("invitations").select("*").eq("user_id", user_id).execute()
         return response.data
     except Exception as e:
+        print(f"Error fetching invitations: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/generate", status_code=status.HTTP_200_OK)
@@ -79,11 +81,6 @@ async def generate_and_upload_invitation(request: InvitationRequest):
         bucket_name = "generated-invitations"
         file_name = f"{request.slug}.html"
         
-        try:
-            supabase.storage.from_(bucket_name).remove([file_name])
-        except Exception:
-            pass # Ignore if file doesn't exist
-
         supabase.storage.from_(bucket_name).upload(
             path=file_name, 
             file=html_content.encode('utf-8'), 
@@ -92,12 +89,9 @@ async def generate_and_upload_invitation(request: InvitationRequest):
         
         public_url = supabase.storage.from_(bucket_name).get_public_url(file_name)
         
-        update_response = supabase.table('invitations').update({
+        supabase.table('invitations').update({
             'generated_html_url': public_url
         }).eq('slug', request.slug).execute()
-
-        if not update_response.data:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{request.slug}' not found.")
 
         return {"message": "Invitation generated successfully!", "invitation_public_url": public_url}
     except Exception as e:
@@ -111,11 +105,6 @@ async def generate_and_upload_invitation_free(request: InvitationRequest):
         bucket_name = "generated-invitations"
         file_name = f"{request.slug}.html"
         
-        try:
-            supabase.storage.from_(bucket_name).remove([file_name])
-        except Exception:
-            pass # Ignore if file doesn't exist
-
         supabase.storage.from_(bucket_name).upload(
             path=file_name, 
             file=html_content.encode('utf-8'), 
@@ -124,150 +113,152 @@ async def generate_and_upload_invitation_free(request: InvitationRequest):
         
         public_url = supabase.storage.from_(bucket_name).get_public_url(file_name)
         
-        update_response = supabase.table('invitations').update({
+        supabase.table('invitations').update({
             'generated_html_url': public_url
         }).eq('slug', request.slug).execute()
-
-        if not update_response.data:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invitation with slug '{request.slug}' not found.")
 
         return {"message": "Free invitation generated successfully!", "invitation_public_url": public_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate free invitation: {str(e)}")
 
-@router.delete("/", status_code=status.HTTP_200_OK)
-async def bulk_delete_invitations(request: BulkDeleteRequest, current_user: dict = Depends(get_current_user)):
+@router.get("/all-rsvps")
+async def get_all_user_rsvps(current_user: dict = Depends(get_current_user)):
     try:
-        user_id = current_user.id
-        slugs_to_delete = request.slugs
+        user_id = getattr(current_user, 'id', None) or current_user.get('id')
+        user_id_str = str(user_id)
+        
+        inv_res = supabase.table("invitations").select("*").eq("user_id", user_id_str).execute()
+        
+        if not inv_res.data:
+            return {"messages": [], "stats": {"total": 0, "hadir": 0, "tidak_hadir": 0}}
 
-        if not slugs_to_delete:
-            raise HTTPException(status_code=400, detail="No slugs provided for deletion.")
+        inv_ids = [str(i['id']) for i in inv_res.data]
+        inv_map = {}
+        for i in inv_res.data:
+            content = i.get('generated_content') or {}
+            p = content.get('namaMempelaiPria') or content.get('namamempelaipria') or i.get('namaMempelaiPria') or "Pria"
+            w = content.get('namaMempelaiWanita') or content.get('namamempelaiwanita') or i.get('namaMempelaiWanita') or "Wanita"
+            inv_map[str(i['id'])] = f"{p} & {w}"
 
-        # Verify all slugs belong to the current user before deleting
-        user_invitations_response = supabase.table("invitations").select("slug").eq("user_id", user_id).in_("slug", slugs_to_delete).execute()
-        owned_slugs = {inv['slug'] for inv in user_invitations_response.data}
-
-        if not all(slug in owned_slugs for slug in slugs_to_delete):
-            raise HTTPException(status_code=403, detail="You do not have permission to delete one or more of the selected invitations.")
-
-        # Delete files from storage
-        bucket_name = "generated-invitations"
-        file_names = [f"{slug}.html" for slug in owned_slugs]
-        if file_names:
-            supabase.storage.from_(bucket_name).remove(file_names)
-
-        # Delete records from database
-        supabase.table("invitations").delete().in_("slug", list(owned_slugs)).execute()
-
-        return {"message": f"Successfully deleted {len(owned_slugs)} invitations."}
+        rsvp_res = supabase.table("guestbook_entries").select("*").in_("invitation_id", inv_ids).order('created_at', desc=True).execute()
+        
+        mapped = []
+        stats_data = {"total": 0, "hadir": 0, "tidak_hadir": 0}
+        
+        for item in rsvp_res.data:
+            status_val = str(item.get('rsvp_status') or item.get('rsvpstatus') or "Hadir")
+            stats_data["total"] += 1
+            if 'tidak' in status_val.lower(): stats_data["tidak_hadir"] += 1
+            else: stats_data["hadir"] += 1
+                
+            inv_id_str = str(item.get('invitation_id'))
+            mapped.append({
+                'id': item.get('id'),
+                'nama': item.get('guest_name') or item.get('guestname') or "Tamu",
+                'kehadiran': status_val,
+                'ucapan': item.get('message') or "",
+                'timestamp': item.get('created_at'),
+                'undangan_id': inv_id_str,
+                'nama_undangan': inv_map.get(inv_id_str, "Undangan")
+            })
+            
+        return {"messages": mapped, "stats": stats_data}
     except Exception as e:
+        print(f"CRITICAL ERROR in all-rsvps:\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{slug}", response_class=HTMLResponse)
 async def get_invitation(slug: str):
     try:
-        # 1. Coba ambil file yang sudah jadi dari storage
-        try:
-            bucket_name = "generated-invitations"
-            file_name = f"{slug}.html"
-            storage_response = supabase.storage.from_(bucket_name).download(file_name)
-            if storage_response:
-                return HTMLResponse(content=storage_response.decode('utf-8'))
-        except Exception:
-            # Jika file tidak ada di storage, jangan langsung error, lanjut ke cara render otomatis
-            pass
+        res = supabase.table("invitations").select("*").eq("slug", slug).execute()
+        if not res.data: raise HTTPException(status_code=404)
+        
+        inv = res.data[0]
+        content = inv.get("generated_content") or {}
+        
+        if isinstance(content, str):
+            import json
+            try: content = json.loads(content)
+            except: content = {}
 
-        # 2. Ambil data dari database untuk buat ulang tampilannya
-        response = supabase.table("invitations").select("*").eq("slug", slug).execute()
-        if not response.data:
-            raise HTTPException(status_code=404, detail="Undangan tidak ditemukan di database.")
+        def get_val(key_list, source_dicts):
+            for d in source_dicts:
+                if not d: continue
+                for k in key_list:
+                    val = d.get(k)
+                    if val and val != "N/A": return val
+            return None
+
+        form_data = {
+            "slug": slug,
+            "namaMempelaiPria": get_val(["namaMempelaiPria", "namamempelaipria", "nama_mempelai_pria"], [content, inv]) or "Mempelai Pria",
+            "namaMempelaiWanita": get_val(["namaMempelaiWanita", "namamempelaiwanita", "nama_mempelai_wanita"], [content, inv]) or "Mempelai Wanita",
+            "namaAyahMempelaiPria": get_val(["namaAyahMempelaiPria", "namaayahmempelaipria"], [content, inv]),
+            "namaIbuMempelaiPria": get_val(["namaIbuMempelaiPria", "namaibumempelaipria"], [content, inv]),
+            "namaAyahMempelaiWanita": get_val(["namaAyahMempelaiWanita", "namaayahmempelaiwanita"], [content, inv]),
+            "namaIbuMempelaiWanita": get_val(["namaIbuMempelaiWanita", "namaibumempelaiwanita"], [content, inv]),
+            "tanggalAcara": get_val(["tanggalAcara", "tanggalacara"], [content, inv]) or "Tanggal Acara",
+            "lokasiAcara": get_val(["lokasiAcara", "lokasiacara"], [content, inv]) or "Lokasi Acara",
+            "waktuAcara": get_val(["waktuAcara", "waktuacara"], [content, inv]),
+            "tempatResepsi": get_val(["tempatResepsi", "tempatresepsi"], [content, inv]),
+            "waktuResepsi": get_val(["waktuResepsi", "wakturesepsi"], [content, inv]),
+            "fotoMempelaiPria": get_val(["fotoMempelaiPria", "fotomempelaipria"], [content, inv]),
+            "fotoMempelaiWanita": get_val(["fotoMempelaiWanita", "fotomempelaiwanita"], [content, inv]),
+            "musik": get_val(["musik", "music"], [content, inv]),
+            "temaWarna": get_val(["temaWarna", "temawarna"], [content, inv]),
+            "galeriFoto": get_val(["galeriFoto", "galerifoto"], [content, inv]) or [],
+            "catatanKhusus": get_val(["catatanKhusus", "catatankhusus"], [content, inv]),
+            "agama": get_val(["agama"], [content, inv]),
+            "jenisUndangan": get_val(["jenisUndangan", "jenisundangan"], [content, inv]),
+        }
         
-        inv_data = response.data[0]
+        print(f"DEBUG SENDING TO AI: {form_data['namaMempelaiPria']} & {form_data['namaMempelaiWanita']}")
         
-        # Ambil data form yang tersimpan di kolom 'generated_content'
-        form_data = inv_data.get("generated_content")
-        
-        if not form_data:
-            # Jika data form tidak ada di generated_content, coba rekonstruksi dari kolom lain
-            form_data = {
-                "namaMempelaiPria": inv_data.get("namaMempelaiPria", "Mempelai Pria"),
-                "namaMempelaiWanita": inv_data.get("namaMempelaiWanita", "Mempelai Wanita"),
-                "tanggalAcara": inv_data.get("tanggalAcara", ""),
-                "lokasiAcara": inv_data.get("lokasiAcara", ""),
-                "slug": slug
-            }
-        
-        # Render HTML secara langsung
-        # Check if this is a free or premium generation by checking premium fields existence.
-        # Alternatively, we could save the tier in the database, but this is a quick fallback.
-        if "fotoMempelaiPria" in form_data and form_data["fotoMempelaiPria"]:
-            html_content = create_invitation_html(form_data)
+        if form_data.get("fotoMempelaiPria") or form_data.get("musik"):
+            html = create_invitation_html(form_data)
         else:
-            html_content = create_invitation_html_free(form_data)
+            html = create_invitation_html_free(form_data)
 
-        return HTMLResponse(content=html_content)
-
+        return HTMLResponse(content=html)
     except Exception as e:
-        print(f"Error loading invitation: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Gagal memuat undangan: {str(e)}")
+        print(f"Error rendering {slug}: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/{slug}", status_code=status.HTTP_200_OK)
-async def delete_invitation(slug: str, current_user: dict = Depends(get_current_user)):
+@router.delete("/", status_code=status.HTTP_200_OK)
+async def bulk_delete_invitations(request: BulkDeleteRequest, current_user: dict = Depends(get_current_user)):
     try:
-        user_id = current_user.id
-        invitation_response = supabase.table("invitations").select("id, user_id").eq("slug", slug).single().execute()
-        
-        if not invitation_response.data:
-            raise HTTPException(status_code=404, detail="Invitation not found.")
-        if invitation_response.data['user_id'] != user_id:
-            raise HTTPException(status_code=403, detail="You do not have permission to delete this invitation.")
-
-        bucket_name = "generated-invitations"
-        file_name = f"{slug}.html"
-        supabase.storage.from_(bucket_name).remove([file_name])
-        supabase.table("invitations").delete().eq("slug", slug).execute()
-
-        return {"message": f"Invitation '{slug}' deleted successfully."}
+        user_id = getattr(current_user, 'id', None) or current_user.get('id')
+        slugs = request.slugs
+        supabase.table("invitations").delete().eq("user_id", user_id).in_("slug", slugs).execute()
+        return {"message": "Deleted successfully"}
     except Exception as e:
-        if "list index out of range" in str(e) or "NoneType" in str(e):
-             raise HTTPException(status_code=404, detail="Invitation not found.")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/{slug}/rsvp", status_code=status.HTTP_201_CREATED)
 async def submit_rsvp(slug: str, rsvp: RSVPRequest):
     try:
-        invitation_check = supabase.table('invitations').select('id').eq('slug', slug).execute()
-        if not invitation_check.data:
-            raise HTTPException(status_code=404, detail=f"Invitation with slug '{slug}' not found.")
-        invitation_id = invitation_check.data[0]['id']
-        rsvp_data = {
-            'invitation_id': invitation_id,
+        check = supabase.table('invitations').select('id').eq('slug', slug).execute()
+        if not check.data: raise HTTPException(status_code=404)
+        inv_id = check.data[0]['id']
+        data = {
+            'invitation_id': inv_id,
             'guest_name': rsvp.nama,
             'rsvp_status': rsvp.kehadiran,
             'message': rsvp.ucapan,
         }
-        response = supabase.table('guestbook_entries').insert(rsvp_data).execute()
-        return {"message": "RSVP submitted successfully!", "data": response.data[0]}
+        supabase.table('guestbook_entries').insert(data).execute()
+        return {"message": "Success"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to submit RSVP: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{slug}/rsvp")
 async def get_rsvp_messages(slug: str):
     try:
-        invitation_check = supabase.table('invitations').select('id').eq('slug', slug).execute()
-        if not invitation_check.data:
-            raise HTTPException(status_code=404, detail=f"Invitation with slug '{slug}' not found.")
-        invitation_id = invitation_check.data[0]['id']
-        response = supabase.table('guestbook_entries').select('guest_name, rsvp_status, message, created_at').eq('invitation_id', invitation_id).order('created_at', desc=True).execute()
-        mapped_data = []
-        for item in response.data:
-            mapped_data.append({
-                'nama': item.get('guest_name'),
-                'kehadiran': item.get('rsvp_status'),
-                'ucapan': item.get('message'),
-                'timestamp': item.get('created_at')
-            })
-        return {"messages": mapped_data}
+        check = supabase.table('invitations').select('id').eq('slug', slug).execute()
+        if not check.data: raise HTTPException(status_code=404)
+        inv_id = check.data[0]['id']
+        res = supabase.table('guestbook_entries').select('*').eq('invitation_id', inv_id).order('created_at', desc=True).execute()
+        mapped = [{'nama': i.get('guest_name'), 'kehadiran': i.get('rsvp_status'), 'ucapan': i.get('message'), 'timestamp': i.get('created_at')} for i in res.data]
+        return {"messages": mapped}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve RSVP messages: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

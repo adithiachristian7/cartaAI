@@ -5,12 +5,18 @@ import { useAuth } from '../context/AuthContext';
 function Profile() {
   const { session, userProfile, logout } = useAuth();
   const navigate = useNavigate();
+  
+  // Data States
   const [invitations, setInvitations] = useState([]);
+  const [rsvps, setRsvps] = useState([]);
+  const [stats, setStats] = useState({ total: 0, hadir: 0, tidak_hadir: 0 });
+  
+  // UI States
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('invitations'); // 'invitations', 'rsvps', 'messages'
+  const [selectedInvitationFilter, setSelectedInvitationFilter] = useState('all');
   const [selected, setSelected] = useState([]);
-  
-  // State for the custom confirmation modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [slugsToDelete, setSlugsToDelete] = useState([]);
 
@@ -19,35 +25,70 @@ function Profile() {
     navigate('/');
   };
 
-  // --- Selection Handlers ---
-  const handleSelection = (slug) => {
-    setSelected(prevSelected => 
-      prevSelected.includes(slug)
-        ? prevSelected.filter(s => s !== slug)
-        : [...prevSelected, slug]
-    );
-  };
+  // --- Computed Data ---
+  const filteredRsvps = selectedInvitationFilter === 'all' 
+    ? rsvps 
+    : rsvps.filter(r => r.undangan_id === selectedInvitationFilter);
 
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelected(invitations.map(inv => inv.slug));
-    } else {
-      setSelected([]);
+  const dynamicStats = selectedInvitationFilter === 'all'
+    ? stats
+    : {
+        total: filteredRsvps.length,
+        hadir: filteredRsvps.filter(r => !r.kehadiran.toLowerCase().includes('tidak')).length,
+        tidak_hadir: filteredRsvps.filter(r => r.kehadiran.toLowerCase().includes('tidak')).length
+      };
+
+  // --- Data Fetching ---
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const headers = { 'Authorization': `Bearer ${session.access_token}` };
+      
+      // Fetch Invitations
+      const invRes = await fetch('/api/invitations/', { headers });
+      if (!invRes.ok) throw new Error('Gagal mengambil data undangan.');
+      const invData = await invRes.json();
+      setInvitations(invData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+
+      // Fetch All RSVPs
+      const rsvpRes = await fetch('/api/invitations/all-rsvps', { headers });
+      if (rsvpRes.ok) {
+        const rsvpData = await rsvpRes.json();
+        setRsvps(rsvpData.messages || []);
+        setStats(rsvpData.stats || { total: 0, hadir: 0, tidak_hadir: 0 });
+      }
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // --- Delete Logic ---
-  // Opens the confirmation modal
+  useEffect(() => {
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    fetchData();
+  }, [session, navigate]);
+
+  // --- Handlers ---
+  const handleSelection = (slug) => {
+    setSelected(prev => prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]);
+  };
+
+  const handleSelectAll = (e) => {
+    setSelected(e.target.checked ? invitations.map(inv => inv.slug) : []);
+  };
+
   const handleDeleteRequest = (slugs) => {
     if (slugs.length === 0) return;
     setSlugsToDelete(slugs);
     setIsModalOpen(true);
   };
 
-  // The actual deletion logic, called from the modal
   const handleConfirmDelete = async () => {
-    if (slugsToDelete.length === 0) return;
-
     try {
       const response = await fetch(`/api/invitations/`, {
         method: 'DELETE',
@@ -58,174 +99,262 @@ function Profile() {
         body: JSON.stringify({ slugs: slugsToDelete }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Gagal menghapus undangan.');
-      }
-
+      if (!response.ok) throw new Error('Gagal menghapus undangan.');
+      
       setInvitations(invitations.filter(inv => !slugsToDelete.includes(inv.slug)));
-      setSelected([]); // Clear selection after deletion
-
+      setSelected([]);
+      setIsModalOpen(false);
+      // Refresh stats after deletion
+      fetchData();
     } catch (err) {
       alert(`Error: ${err.message}`);
-    } finally {
-      // Close the modal and clear the slugs to delete
-      setIsModalOpen(false);
-      setSlugsToDelete([]);
     }
   };
 
-  useEffect(() => {
-    if (!session) {
-      const timer = setTimeout(() => navigate('/login'), 1000);
-      return () => clearTimeout(timer);
-    }
-
-    const fetchInvitations = async () => {
-      try {
-        const response = await fetch('/api/invitations/', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
-        if (!response.ok) throw new Error('Gagal mengambil data undangan.');
-        const data = await response.json();
-        const sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        setInvitations(sortedData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (session) fetchInvitations();
-  }, [session, navigate]);
-
-  if (!session) {
-    return <div className="container mx-auto px-6 py-12 text-center dark:text-gray-300"><p>Mengalihkan ke halaman login...</p></div>;
-  }
+  if (!session) return null;
 
   return (
-    <>
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          
-          {/* --- User Profile Section --- */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700 mb-12">
-            <div className="flex flex-col sm:flex-row items-center gap-8">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-                {session.user.email.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-grow text-center sm:text-left">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profil Pengguna</h1>
-                <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">{session.user.email}</p>
-                <div className="mt-3">
-                  <span className={`font-semibold px-3 py-1 rounded-full text-sm ${userProfile?.subscription_status === 'premium' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300 dark:bg-yellow-900 dark:text-yellow-300 dark:border-yellow-700' : 'bg-gray-100 text-gray-800 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600'}`}>
-                    Langganan: {userProfile?.subscription_status || 'basic'}
-                  </span>
-                </div>
-              </div>
-              <button onClick={handleLogout} className="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-5 rounded-lg transition duration-300 text-sm flex items-center gap-2 self-center sm:self-start mt-4 sm:mt-0 border border-red-200 dark:bg-red-900 dark:hover:bg-red-800 dark:text-red-300 dark:border-red-700">
-                <span className="material-symbols-outlined">logout</span>
-                Logout
-              </button>
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen pb-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* --- Dashboard Header --- */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              {session.user.email.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Halo, {session.user.email.split('@')[0]}!</h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Selamat datang di Dashboard CartaAI Anda.</p>
             </div>
           </div>
+          <div className="flex gap-3">
+            <Link to="/template" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">add</span> Buat Undangan
+            </Link>
+            <button onClick={handleLogout} className="bg-white dark:bg-gray-800 text-red-500 border border-red-100 dark:border-red-900/30 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-50 transition-all flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">logout</span> Keluar
+            </button>
+          </div>
+        </div>
 
-          {/* --- Invitation History Section --- */}
-          <div>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Riwayat Undangan</h2>
-              {invitations.length > 0 && (
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center">
-                    <input type="checkbox" id="selectAll" onChange={handleSelectAll} checked={selected.length === invitations.length && invitations.length > 0} className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                    <label htmlFor="selectAll" className="ml-2 text-sm text-gray-600 dark:text-gray-300">Pilih Semua</label>
-                  </div>
-                  <button onClick={() => handleDeleteRequest(selected)} disabled={selected.length === 0} className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 transition-colors">
-                    <span className="material-symbols-outlined">delete</span>
-                    Hapus ({selected.length})
-                  </button>
-                </div>
-              )}
+        {/* --- Stats Overview --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatCard title="Total Undangan" value={invitations.length} icon="description" color="blue" />
+          <StatCard title="Total RSVP" value={dynamicStats.total} icon="group" color="purple" />
+          <StatCard title="Tamu Hadir" value={dynamicStats.hadir} icon="check_circle" color="green" />
+          <StatCard title="Tamu Berhalangan" value={dynamicStats.tidak_hadir} icon="cancel" color="red" />
+        </div>
+
+        {/* --- Filter & Tabs --- */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="flex flex-col sm:flex-row border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+            <div className="flex flex-1">
+              <TabButton active={activeTab === 'invitations'} onClick={() => setActiveTab('invitations')} label="Riwayat Undangan" icon="history" />
+              <TabButton active={activeTab === 'rsvps'} onClick={() => setActiveTab('rsvps')} label="Daftar Tamu" icon="badge" />
+              <TabButton active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} label="Ucapan & Doa" icon="chat" />
             </div>
-
-            {loading && <p className="text-center text-gray-500 dark:text-gray-400">Memuat riwayat undangan...</p>}
-            {error && <p className="text-center text-red-500 bg-red-50 p-4 rounded-lg dark:text-red-300 dark:bg-red-900">Error: {error}</p>}
             
-            {!loading && !error && invitations.length === 0 && (
-              <div className="text-center bg-white dark:bg-gray-800 rounded-lg p-12 shadow-md">
-                <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">upcoming</span>
-                <p className="text-gray-600 dark:text-gray-300 mt-4 text-lg">Anda belum pernah membuat undangan.</p>
-                <Link to="/template" className="mt-6 inline-block bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-purple-600 hover:to-indigo-500 transition-all duration-300 rounded-lg px-8 py-3 font-bold shadow-lg hover:shadow-xl transition-shadow">Buat Undangan Sekarang</Link>
+            {(activeTab === 'rsvps' || activeTab === 'messages') && invitations.length > 0 && (
+              <div className="p-3 sm:border-l dark:border-gray-700 flex items-center bg-white dark:bg-gray-800">
+                <div className="flex items-center gap-2 w-full">
+                  <span className="material-symbols-outlined text-gray-400 text-sm">filter_list</span>
+                  <select 
+                    value={selectedInvitationFilter} 
+                    onChange={(e) => setSelectedInvitationFilter(e.target.value)}
+                    className="text-xs font-semibold bg-transparent border-none focus:ring-0 text-gray-600 dark:text-gray-300 cursor-pointer w-full"
+                  >
+                    <option value="all">Semua Undangan</option>
+                    {invitations.map(inv => {
+                      const content = inv.generated_content || {};
+                      const pria = content.namaMempelaiPria || inv.namaMempelaiPria || "Pria";
+                      const wanita = content.namaMempelaiWanita || inv.namaMempelaiWanita || "Wanita";
+                      return (
+                        <option key={inv.id} value={inv.id}>
+                          {pria} & {wanita}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
             )}
+          </div>
 
-            {!loading && invitations.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {invitations.map((inv) => {
-                  const title = (inv.namaMempelaiPria && inv.namaMempelaiWanita) ? `${inv.namaMempelaiPria} & ${inv.namaMempelaiWanita}` : (inv.slug || 'Undangan');
-                  const isSelected = selected.includes(inv.slug);
-                  return (
-                    <div key={inv.id} className={`rounded-2xl shadow-lg border overflow-hidden flex flex-col group transition-all duration-300 bg-white dark:bg-gray-800 ${isSelected ? 'border-blue-500 ring-2 ring-blue-500' : 'border-gray-100 dark:border-gray-700'}`}>
-                      <div className="p-6 flex-grow">
-                        <div className="flex justify-between items-start">
-                          <p className="text-sm text-gray-400 dark:text-gray-500 group-hover:text-blue-500 transition-colors">{new Date(inv.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                          <input type="checkbox" checked={isSelected} onChange={() => handleSelection(inv.slug)} className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mt-2 truncate" title={title}>{title}</h3>
-                      </div>
-                      <div className="bg-gray-50 dark:bg-gray-700 p-4 border-t dark:border-gray-600 mt-auto flex items-center gap-2">
-                        <a href={`http://localhost:8000/api/invitations/${inv.slug}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition duration-300 text-sm">
-                          Lihat Undangan
-                        </a>
-                        <button onClick={() => handleDeleteRequest([inv.slug])} className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition duration-300 dark:bg-red-800 dark:hover:bg-red-700 dark:text-red-300" title="Hapus Undangan">
-                          <span className="material-symbols-outlined">delete</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+          <div className="p-6">
+            {loading ? (
+              <div className="py-20 text-center text-gray-400">Memuat data...</div>
+            ) : error ? (
+              <div className="py-20 text-center text-red-500">{error}</div>
+            ) : (
+              <>
+                {activeTab === 'invitations' && (
+                  <InvitationTab 
+                    invitations={invitations} 
+                    selected={selected} 
+                    handleSelection={handleSelection} 
+                    handleSelectAll={handleSelectAll} 
+                    handleDeleteRequest={handleDeleteRequest} 
+                  />
+                )}
+                {activeTab === 'rsvps' && <RsvpTab rsvps={filteredRsvps} />}
+                {activeTab === 'messages' && <MessagesTab rsvps={filteredRsvps} />}
+              </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Deletion Confirmation Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 m-4 max-w-md w-full transform transition-all duration-300 scale-100">
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900 mb-6">
-                <span className="material-symbols-outlined text-4xl text-red-600 dark:text-red-300">
-                  warning
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white" id="modal-title">Konfirmasi Penghapusan</h3>
-              <div className="mt-4">
-                <p className="text-base text-gray-600 dark:text-gray-300">
-                  Apakah Anda yakin ingin menghapus {slugsToDelete.length} undangan? Tindakan ini tidak dapat dibatalkan.
-                </p>
-              </div>
-            </div>
-            <div className="mt-8 flex flex-col sm:flex-row-reverse gap-3">
-              <button
-                type="button"
-                className="w-full inline-flex justify-center rounded-lg shadow-sm px-6 py-3 bg-red-600 text-base font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto transition-colors"
-                onClick={handleConfirmDelete}
-              >
-                Hapus
-              </button>
-              <button
-                type="button"
-                className="w-full inline-flex justify-center rounded-lg shadow-sm px-6 py-3 bg-white dark:bg-gray-700 text-base font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto transition-colors"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Batal
-              </button>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+            <h3 className="text-xl font-bold mb-4 dark:text-white">Hapus Undangan?</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Tindakan ini permanen dan akan menghapus semua data tamu yang terkait.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setIsModalOpen(false)} className="flex-1 py-3 rounded-xl font-semibold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">Batal</button>
+              <button onClick={handleConfirmDelete} className="flex-1 py-3 rounded-xl font-semibold bg-red-500 text-white">Ya, Hapus</button>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
+  );
+}
+
+function StatCard({ title, value, icon, color }) {
+  const colors = {
+    blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+    purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
+    green: 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400',
+    red: 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400',
+  };
+  return (
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors[color]}`}>
+        <span className="material-symbols-outlined">{icon}</span>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function TabButton({ active, onClick, label, icon }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-all border-b-2 ${
+        active 
+          ? 'border-indigo-500 text-indigo-600 bg-white dark:bg-gray-800' 
+          : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+      }`}
+    >
+      <span className="material-symbols-outlined text-lg">{icon}</span>
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
+
+function InvitationTab({ invitations, selected, handleSelection, handleSelectAll, handleDeleteRequest }) {
+  const backendUrl = "http://localhost:8000";
+
+  if (invitations.length === 0) return (
+    <div className="text-center py-12">
+      <p className="text-gray-400 mb-4">Belum ada riwayat undangan.</p>
+      <Link to="/template" className="text-indigo-600 font-bold hover:underline">Buat Sekarang &rarr;</Link>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center pb-4 border-b dark:border-gray-700">
+        <div className="flex items-center gap-2">
+          <input type="checkbox" onChange={handleSelectAll} checked={selected.length === invitations.length} className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+          <span className="text-sm text-gray-500">Pilih Semua</span>
+        </div>
+        {selected.length > 0 && (
+          <button onClick={() => handleDeleteRequest(selected)} className="text-sm font-bold text-red-500 flex items-center gap-1">
+            <span className="material-symbols-outlined text-sm">delete</span> Hapus ({selected.length})
+          </button>
+        )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {invitations.map((inv) => {
+          // Ambil nama dari generated_content jika kolom utama kosong
+          const content = inv.generated_content || {};
+          const pria = content.namaMempelaiPria || inv.namaMempelaiPria || "Mempelai Pria";
+          const wanita = content.namaMempelaiWanita || inv.namaMempelaiWanita || "Mempelai Wanita";
+
+          return (
+            <div key={inv.id} className={`p-4 rounded-2xl border transition-all ${selected.includes(inv.slug) ? 'border-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-700'}`}>
+              <div className="flex justify-between items-start mb-3">
+                <input type="checkbox" checked={selected.includes(inv.slug)} onChange={() => handleSelection(inv.slug)} className="rounded border-gray-300 text-indigo-600" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{new Date(inv.created_at).toLocaleDateString()}</span>
+              </div>
+              <h4 className="font-bold text-gray-800 dark:text-white truncate mb-4">
+                {pria} & {wanita}
+              </h4>
+              <div className="flex gap-2">
+                <a href={`${backendUrl}/api/invitations/${inv.slug}`} target="_blank" rel="noreferrer" className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 rounded-lg text-xs font-bold text-center hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Lihat Undangan</a>
+                <button onClick={() => handleDeleteRequest([inv.slug])} className="px-3 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors"><span className="material-symbols-outlined text-sm">delete</span></button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RsvpTab({ rsvps }) {
+  if (rsvps.length === 0) return <div className="text-center py-12 text-gray-400">Belum ada tamu yang mengisi RSVP.</div>;
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="text-xs uppercase text-gray-400 border-b dark:border-gray-700">
+            <th className="py-3 px-2">Nama Tamu</th>
+            <th className="py-3 px-2">Status</th>
+            <th className="py-3 px-2">Undangan</th>
+            <th className="py-3 px-2 text-right">Tanggal</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y dark:divide-gray-700">
+          {rsvps.map((rsvp) => (
+            <tr key={rsvp.id} className="text-sm">
+              <td className="py-4 px-2 font-semibold text-gray-800 dark:text-white">{rsvp.nama}</td>
+              <td className="py-4 px-2">
+                <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${rsvp.kehadiran.toLowerCase() === 'hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {rsvp.kehadiran}
+                </span>
+              </td>
+              <td className="py-4 px-2 text-gray-500 text-xs">{rsvp.nama_undangan}</td>
+              <td className="py-4 px-2 text-right text-gray-400 text-[10px]">{new Date(rsvp.timestamp).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MessagesTab({ rsvps }) {
+  const messages = rsvps.filter(r => r.ucapan);
+  if (messages.length === 0) return <div className="text-center py-12 text-gray-400">Belum ada ucapan atau doa masuk.</div>;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {messages.map((m) => (
+        <div key={m.id} className="bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-start mb-2">
+            <h5 className="font-bold text-gray-800 dark:text-white text-sm">{m.nama}</h5>
+            <span className="text-[10px] text-gray-400">{m.nama_undangan}</span>
+          </div>
+          <p className="text-gray-600 dark:text-gray-300 text-sm italic">"{m.ucapan}"</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
