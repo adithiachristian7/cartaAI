@@ -58,10 +58,56 @@ class RSVPRequest(BaseModel):
     kehadiran: str
     ucapan: Optional[str] = None
 
+class GuestCreate(BaseModel):
+    name: str
+
+class BulkGuestCreate(BaseModel):
+    slug: str
+    names: List[str]
+
 class BulkDeleteRequest(BaseModel):
     slugs: List[str]
 
 # --- Endpoints ---
+
+@router.get("/guests/{slug}")
+async def get_guests(slug: str, current_user: dict = Depends(get_current_user)):
+    try:
+        user_id = getattr(current_user, 'id', None) or current_user.get('id')
+        # Get invitation and verify ownership
+        inv = supabase.table("invitations").select("id").eq("slug", slug).eq("user_id", user_id).execute()
+        if not inv.data:
+            raise HTTPException(status_code=403, detail="Not authorized or invitation not found")
+        
+        inv_id = inv.data[0]['id']
+        res = supabase.table("guests").select("*").eq("invitation_id", inv_id).order('created_at', desc=True).execute()
+        return res.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/guests/bulk")
+async def add_guests_bulk(request: BulkGuestCreate, current_user: dict = Depends(get_current_user)):
+    try:
+        user_id = getattr(current_user, 'id', None) or current_user.get('id')
+        # Verify ownership
+        inv = supabase.table("invitations").select("id").eq("slug", request.slug).eq("user_id", user_id).execute()
+        if not inv.data:
+            raise HTTPException(status_code=403, detail="Not authorized or invitation not found")
+        
+        inv_id = inv.data[0]['id']
+        guest_data = [{"invitation_id": inv_id, "name": name} for name in request.names]
+        res = supabase.table("guests").insert(guest_data).execute()
+        return {"message": f"Successfully added {len(request.names)} guests", "data": res.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/guests/{guest_id}")
+async def delete_guest(guest_id: str):
+    try:
+        supabase.table("guests").delete().eq("id", guest_id).execute()
+        return {"message": "Guest deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/")
 async def get_user_invitations(current_user: dict = Depends(get_current_user)):
@@ -170,58 +216,36 @@ async def get_all_user_rsvps(current_user: dict = Depends(get_current_user)):
 @router.get("/{slug}", response_class=HTMLResponse)
 async def get_invitation(slug: str):
     try:
-        res = supabase.table("invitations").select("*").eq("slug", slug).execute()
-        if not res.data: raise HTTPException(status_code=404)
+        # 1. Check if invitation exists in database
+        res = supabase.table("invitations").select("generated_html_url").eq("slug", slug).execute()
+        if not res.data:
+            raise HTTPException(status_code=404, detail="Undangan tidak ditemukan")
         
-        inv = res.data[0]
-        content = inv.get("generated_content") or {}
+        # 2. Get the stored HTML URL
+        html_url = res.data[0].get("generated_html_url")
         
-        if isinstance(content, str):
-            import json
-            try: content = json.loads(content)
-            except: content = {}
+        # 3. If URL exists, fetch the static content from Supabase Storage
+        if html_url:
+            import httpx
+            async with httpx.AsyncClient() as client:
+                response = await client.get(html_url)
+                if response.status_code == 200:
+                    return HTMLResponse(content=response.text)
 
-        def get_val(key_list, source_dicts):
-            for d in source_dicts:
-                if not d: continue
-                for k in key_list:
-                    val = d.get(k)
-                    if val and val != "N/A": return val
-            return None
-
-        form_data = {
-            "slug": slug,
-            "namaMempelaiPria": get_val(["namaMempelaiPria", "namamempelaipria", "nama_mempelai_pria"], [content, inv]) or "Mempelai Pria",
-            "namaMempelaiWanita": get_val(["namaMempelaiWanita", "namamempelaiwanita", "nama_mempelai_wanita"], [content, inv]) or "Mempelai Wanita",
-            "namaAyahMempelaiPria": get_val(["namaAyahMempelaiPria", "namaayahmempelaipria"], [content, inv]),
-            "namaIbuMempelaiPria": get_val(["namaIbuMempelaiPria", "namaibumempelaipria"], [content, inv]),
-            "namaAyahMempelaiWanita": get_val(["namaAyahMempelaiWanita", "namaayahmempelaiwanita"], [content, inv]),
-            "namaIbuMempelaiWanita": get_val(["namaIbuMempelaiWanita", "namaibumempelaiwanita"], [content, inv]),
-            "tanggalAcara": get_val(["tanggalAcara", "tanggalacara"], [content, inv]) or "Tanggal Acara",
-            "lokasiAcara": get_val(["lokasiAcara", "lokasiacara"], [content, inv]) or "Lokasi Acara",
-            "waktuAcara": get_val(["waktuAcara", "waktuacara"], [content, inv]),
-            "tempatResepsi": get_val(["tempatResepsi", "tempatresepsi"], [content, inv]),
-            "waktuResepsi": get_val(["waktuResepsi", "wakturesepsi"], [content, inv]),
-            "fotoMempelaiPria": get_val(["fotoMempelaiPria", "fotomempelaipria"], [content, inv]),
-            "fotoMempelaiWanita": get_val(["fotoMempelaiWanita", "fotomempelaiwanita"], [content, inv]),
-            "musik": get_val(["musik", "music"], [content, inv]),
-            "temaWarna": get_val(["temaWarna", "temawarna"], [content, inv]),
-            "galeriFoto": get_val(["galeriFoto", "galerifoto"], [content, inv]) or [],
-            "catatanKhusus": get_val(["catatanKhusus", "catatankhusus"], [content, inv]),
-            "agama": get_val(["agama"], [content, inv]),
-            "jenisUndangan": get_val(["jenisUndangan", "jenisundangan"], [content, inv]),
-        }
+        # 4. Fallback if something is wrong with the stored file
+        raise HTTPException(status_code=500, detail="File undangan tidak dapat dimuat. Silakan generate ulang.")
         
-        print(f"DEBUG SENDING TO AI: {form_data['namaMempelaiPria']} & {form_data['namaMempelaiWanita']}")
-        
-        if form_data.get("fotoMempelaiPria") or form_data.get("musik"):
-            html = create_invitation_html(form_data)
-        else:
-            html = create_invitation_html_free(form_data)
-
-        return HTMLResponse(content=html)
     except Exception as e:
-        print(f"Error rendering {slug}: {traceback.format_exc()}")
+        print(f"Error serving {slug}: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{slug}/finalize")
+async def finalize_invitation(slug: str, current_user: dict = Depends(get_current_user)):
+    try:
+        user_id = getattr(current_user, 'id', None) or current_user.get('id')
+        res = supabase.table("invitations").update({"is_finalized": True}).eq("slug", slug).eq("user_id", user_id).execute()
+        return {"message": "Invitation finalized successfully"}
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/", status_code=status.HTTP_200_OK)
@@ -240,6 +264,8 @@ async def submit_rsvp(slug: str, rsvp: RSVPRequest):
         check = supabase.table('invitations').select('id').eq('slug', slug).execute()
         if not check.data: raise HTTPException(status_code=404)
         inv_id = check.data[0]['id']
+        
+        # 1. Insert into guestbook_entries (the comments/messages)
         data = {
             'invitation_id': inv_id,
             'guest_name': rsvp.nama,
@@ -247,8 +273,18 @@ async def submit_rsvp(slug: str, rsvp: RSVPRequest):
             'message': rsvp.ucapan,
         }
         supabase.table('guestbook_entries').insert(data).execute()
+
+        # 2. Update status in 'guests' table (the management list)
+        # We match by invitation_id and name (case-insensitive search if possible, or exact match)
+        supabase.table('guests')\
+            .update({"status": "RSVPed"})\
+            .eq("invitation_id", inv_id)\
+            .eq("name", rsvp.nama)\
+            .execute()
+
         return {"message": "Success"}
     except Exception as e:
+        print(f"Error in submit_rsvp: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{slug}/rsvp")

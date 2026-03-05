@@ -51,7 +51,7 @@ async def handle_root_post(request: Request):
         print(f"DEBUG: Received POST at root: {body}")
 
         # Coba proses sebagai notifikasi Midtrans jika field yang dibutuhkan ada
-        if "order_id" in body and "transaction_status" in body:
+        if body and "order_id" in body and "transaction_status" in body:
             payload = MidtransWebhookPayload(**body)
             result = await process_midtrans_logic(payload)
             print(f"DEBUG: Root POST processing result: {result}")
@@ -69,7 +69,7 @@ async def handle_misconfigured_path(request: Request):
         body = await request.json()
         print(f"DEBUG: Received POST at /midtrans-notification: {body}")
 
-        if "order_id" in body and "transaction_status" in body:
+        if body and "order_id" in body and "transaction_status" in body:
             payload = MidtransWebhookPayload(**body)
             result = await process_midtrans_logic(payload)
             print(f"DEBUG: /midtrans-notification processing result: {result}")

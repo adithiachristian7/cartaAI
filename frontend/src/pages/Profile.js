@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Profile() {
-  const { session, userProfile, logout } = useAuth();
+  const { session, logout } = useAuth();
   const navigate = useNavigate();
   
   // Data States
@@ -19,6 +19,13 @@ function Profile() {
   const [selected, setSelected] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [slugsToDelete, setSlugsToDelete] = useState([]);
+
+  // Share/Guest Management States
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareSlug, setShareSlug] = useState("");
+  const [guestNames, setGuestNames] = useState("");
+  const [persistedGuests, setPersistedGuests] = useState([]);
+  const [isSavingGuests, setIsSavingGuests] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -44,13 +51,11 @@ function Profile() {
     try {
       const headers = { 'Authorization': `Bearer ${session.access_token}` };
       
-      // Fetch Invitations
       const invRes = await fetch('/api/invitations/', { headers });
       if (!invRes.ok) throw new Error('Gagal mengambil data undangan.');
       const invData = await invRes.json();
       setInvitations(invData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
 
-      // Fetch All RSVPs
       const rsvpRes = await fetch('/api/invitations/all-rsvps', { headers });
       if (rsvpRes.ok) {
         const rsvpData = await rsvpRes.json();
@@ -72,6 +77,82 @@ function Profile() {
     }
     fetchData();
   }, [session, navigate]);
+
+  // --- Guest Management Functions ---
+  const fetchGuests = async (slug) => {
+    try {
+      const headers = { 'Authorization': `Bearer ${session.access_token}` };
+      const res = await fetch(`/api/invitations/guests/${slug}`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setPersistedGuests(data);
+      }
+    } catch (err) {
+      console.error("Error fetching guests:", err);
+    }
+  };
+
+  const handleShareClick = (slug) => {
+    setShareSlug(slug);
+    setGuestNames("");
+    setPersistedGuests([]);
+    setShareModalOpen(true);
+    fetchGuests(slug);
+  };
+
+  const saveGuests = async () => {
+    const names = guestNames.split('\n').map(n => n.trim()).filter(n => n);
+    if (names.length === 0) return;
+
+    setIsSavingGuests(true);
+    try {
+      const response = await fetch('/api/invitations/guests/bulk', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ slug: shareSlug, names })
+      });
+
+      if (response.ok) {
+        setGuestNames("");
+        fetchGuests(shareSlug);
+      } else {
+        alert("Gagal menyimpan daftar tamu.");
+      }
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      setIsSavingGuests(false);
+    }
+  };
+
+  const deleteGuest = async (guestId) => {
+    if (!window.confirm("Hapus tamu ini dari daftar?")) return;
+    try {
+      const headers = { 'Authorization': `Bearer ${session.access_token}` };
+      const res = await fetch(`/api/invitations/guests/${guestId}`, { 
+        method: 'DELETE',
+        headers 
+      });
+      if (res.ok) {
+        setPersistedGuests(persistedGuests.filter(g => g.id !== guestId));
+      }
+    } catch (err) {
+      alert("Gagal menghapus tamu.");
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert('Link disalin ke clipboard!');
+  };
+
+  const getGuestUrl = (name) => {
+    const backendUrl = window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin;
+    return `${backendUrl}/api/invitations/${shareSlug}?to=${encodeURIComponent(name)}`;
+  };
 
   // --- Handlers ---
   const handleSelection = (slug) => {
@@ -104,10 +185,25 @@ function Profile() {
       setInvitations(invitations.filter(inv => !slugsToDelete.includes(inv.slug)));
       setSelected([]);
       setIsModalOpen(false);
-      // Refresh stats after deletion
       fetchData();
     } catch (err) {
       alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleFinalize = async (slug) => {
+    if (!window.confirm("Kunci undangan ini? Setelah dikunci, desain dan data pengantin tidak dapat diubah lagi, dan Anda bisa mulai mengelola daftar tamu.")) return;
+    
+    try {
+      const response = await fetch(`/api/invitations/${slug}/finalize`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
+      });
+      if (response.ok) {
+        fetchData(); // Refresh to update status
+      }
+    } catch (err) {
+      alert("Gagal mengunci undangan.");
     }
   };
 
@@ -151,7 +247,7 @@ function Profile() {
           <div className="flex flex-col sm:flex-row border-b dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
             <div className="flex flex-1">
               <TabButton active={activeTab === 'invitations'} onClick={() => setActiveTab('invitations')} label="Riwayat Undangan" icon="history" />
-              <TabButton active={activeTab === 'rsvps'} onClick={() => setActiveTab('rsvps')} label="Daftar Tamu" icon="badge" />
+              <TabButton active={activeTab === 'rsvps'} onClick={() => setActiveTab('rsvps')} label="Data RSVP" icon="badge" />
               <TabButton active={activeTab === 'messages'} onClick={() => setActiveTab('messages')} label="Ucapan & Doa" icon="chat" />
             </div>
             
@@ -194,7 +290,9 @@ function Profile() {
                     selected={selected} 
                     handleSelection={handleSelection} 
                     handleSelectAll={handleSelectAll} 
-                    handleDeleteRequest={handleDeleteRequest} 
+                    handleDeleteRequest={handleDeleteRequest}
+                    handleShareClick={handleShareClick}
+                    handleFinalize={handleFinalize}
                   />
                 )}
                 {activeTab === 'rsvps' && <RsvpTab rsvps={filteredRsvps} />}
@@ -205,8 +303,9 @@ function Profile() {
         </div>
       </div>
 
+      {/* Modals Section */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
           <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
             <h3 className="text-xl font-bold mb-4 dark:text-white">Hapus Undangan?</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">Tindakan ini permanen dan akan menghapus semua data tamu yang terkait.</p>
@@ -217,10 +316,96 @@ function Profile() {
           </div>
         </div>
       )}
+
+      {shareModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold dark:text-white">Manajemen Tamu</h3>
+              <button onClick={() => setShareModalOpen(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tambah Tamu Baru (Satu nama per baris)</label>
+              <textarea
+                className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl mb-3 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                rows="4"
+                placeholder="Budi Santoso&#10;Keluarga Andi"
+                value={guestNames}
+                onChange={(e) => setGuestNames(e.target.value)}
+              ></textarea>
+              <button 
+                onClick={saveGuests}
+                disabled={isSavingGuests || !guestNames.trim()}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                {isSavingGuests ? "Menyimpan..." : <><span className="material-symbols-outlined">person_add</span> Simpan ke Database</>}
+              </button>
+            </div>
+
+            <div className="mt-8">
+              <h4 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-indigo-500">group</span> 
+                Daftar Tamu Tersimpan ({persistedGuests.length})
+              </h4>
+              
+              {persistedGuests.length === 0 ? (
+                <div className="text-center py-10 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+                  <p className="text-gray-400 text-sm">Belum ada tamu yang disimpan di database.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-2xl">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50 dark:bg-gray-800/50">
+                      <tr>
+                        <th className="p-4 font-bold text-gray-600 dark:text-gray-200">Nama Tamu</th>
+                        <th className="p-4 font-bold text-gray-600 dark:text-gray-200">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                      {persistedGuests.map((guest) => (
+                        <tr key={guest.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                          <td className="p-4 text-gray-800 dark:text-white font-medium">{guest.name}</td>
+                          <td className="p-4 flex gap-2">
+                            <button 
+                              onClick={() => copyToClipboard(getGuestUrl(guest.name))}
+                              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl text-[10px] font-bold flex items-center gap-1"
+                              title="Salin Link"
+                            >
+                              <span className="material-symbols-outlined text-sm">content_copy</span> Copy
+                            </button>
+                            <a 
+                              href={`https://wa.me/?text=${encodeURIComponent(`Kepada Yth. ${guest.name},\n\nKami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami.\n\nBerikut link undangan Anda:\n${getGuestUrl(guest.name)}\n\nTerima Kasih.`)}`}
+                              target="_blank" rel="noreferrer"
+                              className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-[10px] font-bold flex items-center gap-1"
+                            >
+                              <span className="material-symbols-outlined text-sm">send</span> WA
+                            </a>
+                            <button 
+                              onClick={() => deleteGuest(guest.id)}
+                              className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-colors"
+                              title="Hapus"
+                            >
+                              <span className="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
+// Sub-components
 function StatCard({ title, value, icon, color }) {
   const colors = {
     blue: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
@@ -257,8 +442,9 @@ function TabButton({ active, onClick, label, icon }) {
   );
 }
 
-function InvitationTab({ invitations, selected, handleSelection, handleSelectAll, handleDeleteRequest }) {
-  const backendUrl = "http://localhost:8000";
+function InvitationTab({ invitations, selected, handleSelection, handleSelectAll, handleDeleteRequest, handleShareClick, handleFinalize }) {
+  const backendUrl = window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin;
+  const navigate = useNavigate();
 
   if (invitations.length === 0) return (
     <div className="text-center py-12">
@@ -282,23 +468,50 @@ function InvitationTab({ invitations, selected, handleSelection, handleSelectAll
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {invitations.map((inv) => {
-          // Ambil nama dari generated_content jika kolom utama kosong
           const content = inv.generated_content || {};
           const pria = content.namaMempelaiPria || inv.namaMempelaiPria || "Mempelai Pria";
           const wanita = content.namaMempelaiWanita || inv.namaMempelaiWanita || "Mempelai Wanita";
+          const isFinalized = inv.is_finalized;
 
           return (
-            <div key={inv.id} className={`p-4 rounded-2xl border transition-all ${selected.includes(inv.slug) ? 'border-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-700'}`}>
-              <div className="flex justify-between items-start mb-3">
-                <input type="checkbox" checked={selected.includes(inv.slug)} onChange={() => handleSelection(inv.slug)} className="rounded border-gray-300 text-indigo-600" />
+            <div key={inv.id} className={`p-5 rounded-2xl border transition-all ${selected.includes(inv.slug) ? 'border-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" checked={selected.includes(inv.slug)} onChange={() => handleSelection(inv.slug)} className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                  <span className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-md tracking-wider">AKTIF</span>
+                </div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{new Date(inv.created_at).toLocaleDateString()}</span>
               </div>
-              <h4 className="font-bold text-gray-800 dark:text-white truncate mb-4">
+              
+              <h4 className="font-bold text-lg text-gray-900 dark:text-white truncate mb-5">
                 {pria} & {wanita}
               </h4>
-              <div className="flex gap-2">
-                <a href={`${backendUrl}/api/invitations/${inv.slug}`} target="_blank" rel="noreferrer" className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 rounded-lg text-xs font-bold text-center hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Lihat Undangan</a>
-                <button onClick={() => handleDeleteRequest([inv.slug])} className="px-3 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors"><span className="material-symbols-outlined text-sm">delete</span></button>
+
+              <div className="flex flex-col gap-2">
+                <button 
+                  onClick={() => handleShareClick(inv.slug)} 
+                  className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-lg">group</span> Daftar Tamu & Kirim
+                </button>
+                
+                <div className="flex gap-2">
+                  <a 
+                    href={`${backendUrl}/api/invitations/${inv.slug}`} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 rounded-xl text-xs font-bold text-center hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">visibility</span> Lihat
+                  </a>
+                  <button 
+                    onClick={() => handleDeleteRequest([inv.slug])} 
+                    className="px-4 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center justify-center"
+                    title="Hapus Undangan"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                </div>
               </div>
             </div>
           );

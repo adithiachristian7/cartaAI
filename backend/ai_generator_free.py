@@ -1,5 +1,6 @@
 import google.generativeai as genai
 import os
+import re
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -48,24 +49,39 @@ def create_invitation_html_free(data: dict) -> str:
     2. Include essential sections: Cover page, Hero/Introduction, Couple details, Event details with countdown, RSVP form, Comments section, and Footer.
     3. Ensure a "Created with CartaAI - Free Version" watermark or badge is placed neatly in the footer.
     4. Replace all placeholders with the corresponding wedding details provided.
-    5. **RSVP & Guestbook JavaScript Logic (VERY IMPORTANT):**
+    5. **Guest Personalization (CRITICAL):**
+        - On the Cover page, include a section like "Kepada Yth. Bapak/Ibu/Saudara/i:" followed by an element to display the guest name (e.g., `<span id="guest-name-display">Tamu Undangan</span>`).
+    6. **RSVP & Guestbook JavaScript Logic (VERY IMPORTANT):**
         - Create one combined section for "RSVP & Ucapan".
         - This section must contain a single form with inputs for `nama` (name), `kehadiran` (attendance status: Hadir/Tidak Hadir), and `ucapan` (message).
+        - **IMPORTANT FOR NAME INPUT:** The `nama` input must have the id `rsvp-name`.
         - Create one JavaScript function, for example `loadRsvpMessages()`.
         - **`loadRsvpMessages()` function:**
-            - It must perform a `fetch` GET request to `/api/invitations/[SLUG]/rsvp`.
+            - It must perform a `fetch` GET request to `window.location.origin + "/api/invitations/[SLUG]/rsvp"`.
             - The response will be a JSON object like `{ "messages": [...] }`. You **must** access the array using `data.messages`.
-            - On success, it must clear the guestbook display container (e.g., `<div id="guestbook-list">`).
-            - Then, it must loop through the `data.messages` array. For each message, create a new HTML element and display the `nama`, `kehadiran`, and `ucapan`. Append this element to the container.
-        - **On Page Load:** When the page's DOM is fully loaded, call `loadRsvpMessages()` to display the initial data.
+            - On success, clear the guestbook container and loop through `data.messages`, displaying `nama`, `kehadiran`, and `ucapan`.
+        - **On Page Load Logic:** 
+            - When the page loads, execute JavaScript to read the `to` parameter from the URL query string (`new URLSearchParams(window.location.search).get('to')`).
+            - If the `to` parameter exists:
+                - Decode it.
+                - Update the text of the `#guest-name-display` element on the Cover page with this name.
+                - Set the value of the `#rsvp-name` input to this name, and make the input `readonly`.
+            - Call `loadRsvpMessages()` to display the initial data.
         - **On Form Submission:**
-            - After a successful `POST` to `/api/invitations/[SLUG]/rsvp` with the form data, you **must** call `loadRsvpMessages()` again to refresh the list with the new message.
+            - Perform a `POST` request to `window.location.origin + "/api/invitations/[SLUG]/rsvp"` with the form data.
+            - After success, you **must** call `loadRsvpMessages()` again to refresh the list with the new message.
+    7. **STRICT NO EXTERNAL ASSETS:** 
+        - DO NOT USE ANY <img> TAGS.
+        - DO NOT USE ANY EXTERNAL IMAGE URLS (like via.placeholder.com, unsplash, etc.).
+        - DO NOT USE ANY EXTERNAL FONTS other than standard ones or Google Fonts.
+        - Use only CSS gradients, solid colors, and SVG code for decorations.
+        - For icons like hearts, use Unicode characters (e.g., ❤) or simple SVG paths.
     """
 
     # Helper to format date for JS
-    event_date_iso = data.get('tanggalAcara', '')
-    event_time = data.get('waktuAcara', '00:00:00')
-    if event_date_iso and ':' in event_time:
+    event_date_iso = data.get('tanggalAcara') or ''
+    event_time = data.get('waktuAcara') or '00:00:00'
+    if event_date_iso and event_time and ':' in str(event_time):
         event_date_iso = f"{event_date_iso}T{event_time}"
 
     prompt = prompt_template.replace("[SLUG]", data.get('slug') or 'N/A')
@@ -89,6 +105,11 @@ def create_invitation_html_free(data: dict) -> str:
             html_content = html_content[7:]
         if html_content.endswith("```"):
             html_content = html_content[:-3]
+        
+        # FINAL SANITIZATION: Forcefully remove any via.placeholder.com links or any other external images
+        html_content = re.sub(r'https?://via\.placeholder\.com/[^\s"\'>]+', '', html_content)
+        # Remove any <img> tag entirely to be safe
+        html_content = re.sub(r'<img[^>]*>', '', html_content)
         
         return html_content.strip()
     except Exception as e:

@@ -244,10 +244,26 @@ function PremiumGenerator() {
       if (!finalUrl) {
         throw new Error("Backend tidak mengembalikan URL undangan.");
       }
+      
       const botResponse = {
         id: messages.length + 2,
         type: "bot",
-        content: `🎉 Berhasil! Proses selesai.\n\nSilakan klik link di bawah untuk melihat undangan Anda:\n<a href="${finalUrl}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">Lihat Undangan: ${savedInvitation.slug}</a>`,
+        content: `
+          <div style="font-family: sans-serif; min-width: 200px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span style="font-size: 18px;">✨</span>
+              <span style="font-weight: 800; font-size: 14px; letter-spacing: -0.01em;">Undangan Siap!</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; background: #4f46e5; color: white; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 11px; text-align: center; display: block;">
+                👁️ Lihat Pratinjau
+              </a>
+              <button onclick="window.location.href='/profile'" style="border: 1px solid #e2e8f0; background: white; color: #475569; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; display: block; width: 100%;">
+                👥 Kelola Tamu
+              </button>
+            </div>
+          </div>
+        `,
       };
       setMessages((prev) => [...prev, botResponse]);
       setGeneratedLink(finalUrl);

@@ -62,31 +62,42 @@ def create_invitation_html(data: dict) -> str:
     6. If music URL is provided, include an audio player with toggle button; otherwise, omit it.
     7. Ensure the HTML is complete, functional, and includes all provided images and URLs.
     8. Set the background image for cover and hero sections to [BACKGROUND_URL] using CSS background-size: cover to prevent breaking.
-    9. **RSVP & Guestbook JavaScript Logic (VERY IMPORTANT):**
+    9. **Guest Personalization (CRITICAL):**
+        - On the Cover page, include a section like "Kepada Yth. Bapak/Ibu/Saudara/i:" followed by an element to display the guest name (e.g., `<span id="guest-name-display">Tamu Undangan</span>`).
+    10. **RSVP & Guestbook JavaScript Logic (VERY IMPORTANT):**
         - Create one combined section for "RSVP & Ucapan".
         - This section must contain a single form with inputs for `nama` (name), `kehadiran` (attendance status: Hadir/Tidak Hadir), and `ucapan` (message).
+        - **IMPORTANT FOR NAME INPUT:** The `nama` input must have the id `rsvp-name`.
         - Create one JavaScript function, for example `loadRsvpMessages()`.
         - **`loadRsvpMessages()` function:**
             - It must perform a `fetch` GET request to `/api/invitations/[SLUG]/rsvp`.
             - The response will be a JSON object like `{ "messages": [...] }`. You **must** access the array using `data.messages`.
-            - On success, it must clear the guestbook display container (e.g., `<div id="guestbook-list">`).
-            - Then, it must loop through the `data.messages` array. For each message, create a new HTML element and display the `nama`, `kehadiran`, and `ucapan`. Append this element to the container.
-        - **On Page Load:** When the page's DOM is fully loaded, call `loadRsvpMessages()` to display the initial data.
+            - On success, clear the guestbook container and loop through `data.messages`, displaying `nama`, `kehadiran`, and `ucapan`.
+        - **On Page Load Logic:** 
+            - When the page loads, execute JavaScript to read the `to` parameter from the URL query string (`new URLSearchParams(window.location.search).get('to')`).
+            - If the `to` parameter exists:
+                - Decode it (replace '+' with space or use decodeURIComponent).
+                - Update the text of the `#guest-name-display` element on the Cover page with this name.
+                - Set the value of the `#rsvp-name` input to this name, and make the input `readonly` so the guest cannot change their name.
+            - Call `loadRsvpMessages()` to display the initial data.
         - **On Form Submission:**
             - After a successful `POST` to `/api/invitations/[SLUG]/rsvp` with the form data, you **must** call `loadRsvpMessages()` again to refresh the list with the new message.
-        - Display an error message like "Gagal memuat pesan..." inside the container if the `fetch` call fails.
+        - Display an error message inside the container if the `fetch` call fails.
     """
 
     # Helper to format date for JS
-    event_date_iso = data.get('tanggalAcara', '')
-    event_time = data.get('waktuAcara', '00:00:00')
-    if event_date_iso and ':' in event_time:
+    event_date_iso = data.get('tanggalAcara') or ''
+    event_time = data.get('waktuAcara') or '00:00:00'
+    if event_date_iso and event_time and ':' in str(event_time):
         event_date_iso = f"{event_date_iso}T{event_time}"
 
     # Generate gallery photos HTML in Python
-    gallery_photos = data.get('galeriFoto', [])
+    gallery_photos = data.get('galeriFoto')
+    if gallery_photos is None:
+        gallery_photos = []
+    
     gallery_html = ""
-    if gallery_photos:
+    if isinstance(gallery_photos, list) and gallery_photos:
         for i, url in enumerate(gallery_photos):
             col_span = ""
             if len(gallery_photos) > 3 and i >= len(gallery_photos) - 2:
